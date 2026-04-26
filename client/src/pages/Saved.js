@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { AuthContext } from '../context/AuthContext';
 import ArticleCard from '../components/article/ArticleCard';
 import api from '../utils/api';
 import '../styles/Saved.css';
 
 export default function Saved() {
+  const { user } = useContext(AuthContext);
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
 

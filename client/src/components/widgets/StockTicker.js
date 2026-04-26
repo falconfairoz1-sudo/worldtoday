@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../../styles/Widgets.css';
+
+const INDICES = [
+  { symbol: 'SPY', label: 'S&P 500' },
+  { symbol: 'QQQ', label: 'NASDAQ' },
+  { symbol: 'DIA', label: 'DOW' },
+  { symbol: 'EWI', label: 'FTSE' },
+];
 
 // Using free Yahoo Finance alternative via allorigins proxy
 export default function StockTicker() {
-  const [stocks] = useState([
+  const [stocks, setStocks] = useState([
     { label: 'S&P 500', price: '5,234', change: '+0.42%', up: true },
     { label: 'NASDAQ', price: '16,421', change: '+0.61%', up: true },
     { label: 'DOW', price: '39,127', change: '-0.12%', up: false },

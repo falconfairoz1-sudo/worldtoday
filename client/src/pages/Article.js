@@ -7,6 +7,7 @@ import ReadingProgress from '../components/reading/ReadingProgress';
 import ShareButtons from '../components/social/ShareButtons';
 import ReactionBar from '../components/social/ReactionBar';
 import CommentSection from '../components/social/CommentSection';
+import ArticleCard from '../components/article/ArticleCard';
 import ArticleIntelligence from '../components/article/ArticleIntelligence';
 import api from '../utils/api';
 import { copyToClipboard, calculateReadingTime } from '../utils/helpers';
