@@ -24,7 +24,7 @@ export default function Premium() {
       return;
     }
     try {
-      const res = await api.post('/user/subscribe', { plan });
+      await api.post('/user/subscribe', { plan });
       updateUser({ isPremium: true });
       alert('🎉 Premium activated! Enjoy WorldToday Premium.');
     } catch (err) {

@@ -22,7 +22,7 @@ export default function Profile() {
     e.preventDefault();
     setSaving(true);
     try {
-      const res = await api.put('/user/profile', { name: form.name, bio: form.bio });
+      await api.put('/user/profile', { name: form.name, bio: form.bio });
       await api.put('/user/preferences', { categories: form.categories });
       updateUser({ name: form.name, bio: form.bio });
       toast.success('Profile updated!');

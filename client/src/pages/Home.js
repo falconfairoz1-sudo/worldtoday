@@ -41,15 +41,14 @@ export default function Home() {
     fetchFeatured();
     fetchCategoryNews();
     if (user) fetchPersonalized();
-  }, [selectedCountry]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCountry, user]);
 
   const fetchFeatured = async () => {
     try {
-      // Fetch 1 best article per category for the top row (5 categories = 5 columns)
       const TOP_CATEGORIES = ['politics', 'business', 'technology', 'sports', 'entertainment'];
       const REST_CATEGORIES = ['health', 'science'];
 
-      // Fetch top 5 categories — one article each for the top row
       const topPromises = TOP_CATEGORIES.map(id =>
         api.get('/news', {
           params: {
@@ -60,7 +59,6 @@ export default function Home() {
         }).catch(() => ({ data: { articles: [] } }))
       );
 
-      // Fetch remaining categories for the rest of the grid
       const restPromises = REST_CATEGORIES.map(id =>
         api.get('/news', {
           params: {
@@ -76,7 +74,6 @@ export default function Home() {
         Promise.all(restPromises),
       ]);
 
-      // Pick the best (first with image, else first) article from each top category
       const topArticles = topResults.map(res => {
         const articles = res.data?.articles || res.data || [];
         return (
@@ -86,7 +83,6 @@ export default function Home() {
         );
       }).filter(Boolean);
 
-      // Collect remaining articles from all categories (deduplicated)
       const usedUrls = new Set(topArticles.map(a => a.url));
 
       const restArticles = [...topResults, ...restResults]
@@ -95,7 +91,6 @@ export default function Home() {
         .filter((a, i, self) => self.findIndex(x => x.url === a.url) === i)
         .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
 
-      // Final: top 5 (one per category) + rest
       setFeatured([...topArticles, ...restArticles].slice(0, 30));
     } catch (err) {
       console.error('Failed to fetch featured news:', err);
@@ -109,12 +104,11 @@ export default function Home() {
     await Promise.allSettled(
       CATEGORIES.map(async ({ id }) => {
         try {
-          const params = { category: id, limit: 16 }; // Increased from 12 to 16
+          const params = { category: id, limit: 16 };
           if (selectedCountry) params.country = selectedCountry;
           const res = await api.get('/news', { params });
           const articles = res.data?.articles || res.data || [];
           
-          // Prioritize articles WITH images, but include all
           const articlesWithImages = articles.filter(article => 
             article.urlToImage && article.urlToImage.trim() !== ''
           );
@@ -122,10 +116,7 @@ export default function Home() {
             !article.urlToImage || article.urlToImage.trim() === ''
           );
           
-          // Combine: prioritize with images, then without
           const combined = [...articlesWithImages, ...articlesWithoutImages];
-          
-          // Take first 6 articles (increased from 4 to show more content)
           results[id] = combined.slice(0, 6);
         } catch (e) {
           results[id] = [];

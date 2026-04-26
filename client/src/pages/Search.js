@@ -28,6 +28,7 @@ export default function Search() {
       setQuery(q);
       doSearch(q, filters);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   const doSearch = async (q, f) => {
