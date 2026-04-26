@@ -1,0 +1,48 @@
+.share-buttons {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 16px 0;
+}
+
+.share-buttons__label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition);
+  color: white;
+}
+
+.share-btn--facebook { background: #1877f2; }
+.share-btn--facebook:hover { background: #166fe5; }
+.share-btn--twitter { background: #1da1f2; }
+.share-btn--twitter:hover { background: #1a91da; }
+.share-btn--whatsapp { background: #25d366; }
+.share-btn--whatsapp:hover { background: #20bd5a; }
+.share-btn--linkedin { background: #0a66c2; }
+.share-btn--linkedin:hover { background: #0958a8; }
+.share-btn--copy {
+  background: var(--light-gray);
+  color: var(--text-primary);
+}
+.share-btn--copy:hover { background: var(--border); }
+
+@media (max-width: 480px) {
+  .share-btn span { display: none; }
+  .share-btn { padding: 8px 10px; border-radius: 50%; }
+}

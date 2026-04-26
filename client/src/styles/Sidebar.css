@@ -1,0 +1,154 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* All direct children of sidebar should be full width */
+.sidebar > *,
+.sidebar .widget,
+.sidebar .widget--weather-enhanced,
+.sidebar .trending-container {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Trending Container - Single Column Layout */
+.trending-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+/* Make trending widgets fill their container fully */
+.trending-container .widget,
+.trending-container .trending-topics {
+  margin-bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.trending__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.trending__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.trending__num {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  margin-top: 1px;
+}
+
+.trending__title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.4;
+  text-decoration: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color var(--transition);
+}
+.trending__title:hover { color: var(--primary); }
+
+.widget--newsletter .newsletter__desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ── Trending Now Widget ──────────────────────────────────────────────── */
+.widget--trending-now {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.widget--trending-now .widget__header {
+  border-bottom-color: rgba(255,255,255,0.2);
+}
+
+.widget--trending-now .widget__title {
+  color: white;
+}
+
+.trending-now__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.trending-now__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 16px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: white;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.trending-now__tag:hover {
+  background: rgba(255,255,255,0.25);
+  border-color: rgba(255,255,255,0.4);
+  transform: translateY(-1px);
+}
+
+.trending-now__tag--hot {
+  background: rgba(255,107,107,0.3);
+  border-color: rgba(255,107,107,0.5);
+}
+
+.trending-now__tag--up {
+  background: rgba(72,219,251,0.3);
+  border-color: rgba(72,219,251,0.5);
+}
+
+.trending-now__keyword {
+  font-weight: 700;
+}
+
+.trending-now__count {
+  font-size: 0.65rem;
+  opacity: 0.8;
+  background: rgba(0,0,0,0.15);
+  padding: 1px 5px;
+  border-radius: 8px;
+}
+
+.trending-now__fire,
+.trending-now__arrow {
+  font-size: 0.7rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.1); }
+}

@@ -1,0 +1,177 @@
+/* ── Magazine Layout ─────────────────────────────────────────────────── */
+.article-grid--magazine {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+/* Mobile: Stack everything */
+.article-grid__featured,
+.article-grid__secondary,
+.article-grid__remaining {
+  display: grid;
+  gap: 10px;
+}
+
+/* Mobile: featured = full width single card */
+.article-grid__featured {
+  grid-template-columns: 1fr;
+}
+
+/* Mobile: secondary = 2 side-by-side cards */
+.article-grid__secondary {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* Mobile: remaining = 2 columns */
+.article-grid__remaining {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* Small mobile: 1 column for secondary too */
+@media (max-width: 400px) {
+  .article-grid__secondary {
+    grid-template-columns: 1fr;
+  }
+  .article-grid__remaining {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tablet: 3 columns */
+@media (min-width: 640px) {
+  .article-grid--magazine {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .article-grid__featured {
+    grid-column: span 3;
+  }
+  .article-grid__secondary {
+    grid-column: span 3;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .article-grid__remaining {
+    grid-column: span 3;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+}
+
+/* Desktop: 5 columns for top, 7 for bottom */
+@media (min-width: 768px) {
+  .article-grid--magazine {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  .article-grid__featured {
+    grid-column: span 2;
+  }
+  .article-grid__secondary {
+    grid-column: span 3;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .article-grid__remaining {
+    grid-column: span 5;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+  }
+}
+
+/* Large Desktop */
+@media (min-width: 1024px) {
+  .article-grid--magazine {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  .article-grid__featured {
+    grid-column: span 2;
+  }
+  .article-grid__secondary {
+    grid-column: span 3;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .article-grid__remaining {
+    grid-column: span 5;
+    grid-template-columns: repeat(7, 1fr);
+  }
+}
+
+/* Extra Large */
+@media (min-width: 1280px) {
+  .article-grid--magazine {
+    grid-template-columns: repeat(10, 1fr);
+  }
+  .article-grid__featured {
+    grid-column: span 2;
+  }
+  .article-grid__secondary {
+    grid-column: span 8;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .article-grid__remaining {
+    grid-column: span 10;
+    grid-template-columns: repeat(7, 1fr);
+  }
+}
+
+/* ── Grid Layout ──────────────────────────────────────────────────────── */
+.article-grid--grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); /* Reduced from 260px */
+  gap: 16px; /* Reduced from 20px */
+}
+
+/* ── List Layout ──────────────────────────────────────────────────────── */
+.article-grid--list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Reduced from 16px */
+}
+
+.article-grid--list .article-card {
+  flex-direction: row;
+  height: auto;
+  min-height: 110px;
+}
+
+.article-grid--list .article-card__image-link {
+  flex-shrink: 0;
+  width: 150px;
+}
+
+.article-grid--list .article-card__image-wrapper {
+  padding-top: 0 !important;
+  height: 100%;
+  min-height: 110px;
+}
+
+.article-grid--list .article-card__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.article-grid--list .article-card__image-placeholder {
+  position: absolute;
+  inset: 0;
+  height: auto;
+}
+
+@media (max-width: 600px) {
+  .article-grid--list .article-card {
+    flex-direction: column;
+    min-height: auto;
+  }
+  .article-grid--list .article-card__image-link {
+    width: 100%;
+  }
+  .article-grid--list .article-card__image-wrapper {
+    padding-top: 56% !important;
+    min-height: 0;
+    height: auto;
+  }
+}

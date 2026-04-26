@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WorldToday Logo Preview</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      width: 100%;
+    }
+    
+    h1 {
+      text-align: center;
+      color: white;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: rgba(255,255,255,0.9);
+      font-size: 1.1rem;
+      margin-bottom: 40px;
+    }
+    
+    .logo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+    
+    .logo-card {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .logo-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    }
+    
+    .logo-card h2 {
+      text-align: center;
+      color: #1a1a2e;
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+    
+    .logo-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 200px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    
+    .logo-display img {
+      max-width: 100%;
+      height: auto;
+    }
+    
+    .size-info {
+      text-align: center;
+      margin-top: 15px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+    
+    .color-palette {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      margin-bottom: 40px;
+    }
+    
+    .color-palette h2 {
+      color: #1a1a2e;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+    }
+    
+    .colors {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+    }
+    
+    .color-item {
+      text-align: center;
+    }
+    
+    .color-box {
+      width: 100%;
+      height: 80px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .color-name {
+      font-weight: 600;
+      color: #1a1a2e;
+      margin-bottom: 5px;
+    }
+    
+    .color-code {
+      font-family: 'Courier New', monospace;
+      color: #666;
+      font-size: 0.85rem;
+    }
+    
+    .features {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .features h2 {
+      color: #1a1a2e;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+    }
+    
+    .features ul {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .features li {
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+      color: #333;
+      display: flex;
+      align-items: center;
+    }
+    
+    .features li:last-child {
+      border-bottom: none;
+    }
+    
+    .features li::before {
+      content: "✓";
+      color: #E63946;
+      font-weight: bold;
+      margin-right: 12px;
+      font-size: 1.2rem;
+    }
+    
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .logo-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌍 WorldToday Logo</h1>
+    <p class="subtitle">Modern, Professional News Platform Branding</p>
+    
+    <div class="logo-grid">
+      <div class="logo-card">
+        <h2>Main Logo (SVG)</h2>
+        <div class="logo-display">
+          <img src="logo.svg" alt="WorldToday Logo" width="200">
+        </div>
+        <div class="size-info">200x200 • Scalable Vector</div>
+      </div>
+      
+      <div class="logo-card">
+        <h2>App Icon (192px)</h2>
+        <div class="logo-display">
+          <img src="logo192.svg" alt="WorldToday Logo 192" width="192">
+        </div>
+        <div class="size-info">192x192 • PWA Icon</div>
+      </div>
+      
+      <div class="logo-card">
+        <h2>Favicon</h2>
+        <div class="logo-display">
+          <img src="favicon.ico" alt="WorldToday Favicon" width="64">
+        </div>
+        <div class="size-info">32x32 • Browser Tab Icon</div>
+      </div>
+    </div>
+    
+    <div class="color-palette">
+      <h2>🎨 Brand Colors</h2>
+      <div class="colors">
+        <div class="color-item">
+          <div class="color-box" style="background: #E63946;"></div>
+          <div class="color-name">Primary Red</div>
+          <div class="color-code">#E63946</div>
+        </div>
+        
+        <div class="color-item">
+          <div class="color-box" style="background: #C41E3A;"></div>
+          <div class="color-name">Dark Red</div>
+          <div class="color-code">#C41E3A</div>
+        </div>
+        
+        <div class="color-item">
+          <div class="color-box" style="background: #A01828;"></div>
+          <div class="color-name">Deep Red</div>
+          <div class="color-code">#A01828</div>
+        </div>
+        
+        <div class="color-item">
+          <div class="color-box" style="background: #1a1a2e;"></div>
+          <div class="color-name">Dark Text</div>
+          <div class="color-code">#1a1a2e</div>
+        </div>
+        
+        <div class="color-item">
+          <div class="color-box" style="background: #666666;"></div>
+          <div class="color-name">Gray Text</div>
+          <div class="color-code">#666666</div>
+        </div>
+        
+        <div class="color-item">
+          <div class="color-box" style="background: #FFFFFF; border: 1px solid #ddd;"></div>
+          <div class="color-name">White</div>
+          <div class="color-code">#FFFFFF</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="features">
+      <h2>✨ Logo Features</h2>
+      <ul>
+        <li>Modern globe design representing global news coverage</li>
+        <li>Clean, professional typography for credibility</li>
+        <li>Gradient colors for depth and visual interest</li>
+        <li>Scalable SVG format for all screen sizes</li>
+        <li>Recognizable at any size (favicon to billboard)</li>
+        <li>Works on light and dark backgrounds</li>
+        <li>Meridian lines symbolizing worldwide reach</li>
+        <li>Bold "TODAY" emphasizes current, breaking news</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
