@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-const PRIMARY_API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-const FALLBACK_API_URL = 'http://localhost:5000/api';
+// Use production backend for all environments
+const PRIMARY_API_URL = 'https://worldtoday.onrender.com/api';
+const FALLBACK_API_URL = 'https://worldtoday.onrender.com/api';
 
 // Create primary API instance
 const api = axios.create({

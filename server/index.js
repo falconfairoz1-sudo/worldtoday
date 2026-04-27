@@ -39,6 +39,7 @@ const server = http.createServer(app);
 // CORS configuration for multiple origins
 const allowedOrigins = [
   'http://localhost:3000',
+  'http://10.123.103.101:3000', // Network IP for mobile access
   'https://worldtoday.vercel.app',
   'https://worldtoday-git-main-falconfairoz1-sudo.vercel.app',
   'https://worldtoday-falconfairoz1-sudo.vercel.app'
