@@ -40,7 +40,7 @@ const server = http.createServer(app);
 // Socket.io for real-time notifications
 const io = new Server(server, {
   cors: {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    origin: allowedOrigins,
     methods: ['GET', 'POST']
   }
 });
@@ -55,8 +55,26 @@ io.on('connection', (socket) => {
 
 // Middleware
 app.use(helmet({ contentSecurityPolicy: false }));
+
+// CORS configuration for multiple origins
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://worldtoday.vercel.app',
+  'https://worldtoday-git-main-falconfairoz1-sudo.vercel.app',
+  'https://worldtoday-falconfairoz1-sudo.vercel.app'
+];
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
@@ -108,6 +126,19 @@ app.use('/api/image-proxy', imageProxyRoutes);
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// Simple test route
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'WorldToday Backend API', 
+    status: 'running',
+    endpoints: {
+      health: '/health',
+      api: '/api',
+      news: '/api/news'
+    }
+  });
 });
 
 // 404 handler

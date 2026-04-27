@@ -6,6 +6,7 @@ import BreakingNewsTicker from '../components/BreakingNewsTicker';
 import ArticleCard from '../components/article/ArticleCard';
 import ArticleGrid from '../components/article/ArticleGrid';
 import Sidebar from '../components/layout/Sidebar';
+import ApiTest from '../components/ApiTest';
 import api from '../utils/api';
 import '../styles/Home.css';
 
@@ -46,6 +47,9 @@ export default function Home() {
 
   const fetchFeatured = async () => {
     try {
+      console.log('🔍 Fetching featured articles...');
+      console.log('API URL:', process.env.REACT_APP_API_URL || 'http://localhost:5000/api');
+      
       const TOP_CATEGORIES = ['politics', 'business', 'technology', 'sports', 'entertainment'];
       const REST_CATEGORIES = ['health', 'science'];
 
@@ -56,7 +60,10 @@ export default function Home() {
             limit: 5,
             ...(selectedCountry && { country: selectedCountry })
           }
-        }).catch(() => ({ data: { articles: [] } }))
+        }).catch((error) => {
+          console.error(`❌ Error fetching ${id}:`, error.message);
+          return { data: { articles: [] } };
+        })
       );
 
       const restPromises = REST_CATEGORIES.map(id =>
@@ -145,6 +152,7 @@ export default function Home() {
 
   return (
     <>
+      <ApiTest />
       <Helmet>
         <title>WorldToday — World News, Breaking News, Latest Updates</title>
         <meta name="description" content="WorldToday brings you breaking news and in-depth coverage from 54 countries." />
