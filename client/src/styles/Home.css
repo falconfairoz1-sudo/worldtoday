@@ -63,6 +63,28 @@
   }
 }
 
+/* Show sidebar when in desktop mode on mobile (wider viewport or landscape) */
+@media (min-width: 768px) {
+  .home__sidebar {
+    display: block !important; /* Force show sidebar in desktop mode */
+  }
+  
+  .home__layout { 
+    grid-template-columns: 1fr 280px;
+    gap: 16px;
+  }
+}
+
+/* Force desktop layout class - show sidebar */
+.force-desktop-layout .home__sidebar {
+  display: block !important;
+}
+
+.force-desktop-layout .home__layout {
+  grid-template-columns: 1fr 280px !important;
+  gap: 16px !important;
+}
+
 .home__main   { min-width: 0; }
 .home__sidebar { min-width: 0; }
 

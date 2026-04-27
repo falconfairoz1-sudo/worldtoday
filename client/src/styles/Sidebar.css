@@ -13,6 +13,30 @@
   box-sizing: border-box;
 }
 
+/* Mobile desktop mode adjustments */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .sidebar {
+    width: 280px;
+    min-width: 280px;
+  }
+  
+  /* Slightly smaller widgets on mobile desktop mode */
+  .sidebar .widget {
+    font-size: 0.9rem;
+  }
+  
+  .sidebar .widget__title {
+    font-size: 0.85rem;
+  }
+}
+
+/* Ensure sidebar is visible in desktop mode */
+@media (min-width: 768px) {
+  .sidebar {
+    display: flex !important;
+  }
+}
+
 /* Trending Container - Single Column Layout */
 .trending-container {
   display: flex;
