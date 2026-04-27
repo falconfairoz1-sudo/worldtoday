@@ -4,6 +4,7 @@ import WeatherWidget from '../widgets/WeatherWidget';
 import StockTicker from '../widgets/StockTicker';
 import CurrencyConverter from '../widgets/CurrencyConverter';
 import TrendingTopics from '../widgets/TrendingTopics';
+import ApiStatusWidget from '../widgets/ApiStatusWidget';
 import api from '../../utils/api';
 import '../../styles/Sidebar.css';
 
@@ -46,6 +47,7 @@ export default function Sidebar() {
       <WeatherWidget />
       <StockTicker />
       <CurrencyConverter />
+      <ApiStatusWidget />
 
       {/* Newsletter CTA */}
       <div className="widget widget--newsletter">
