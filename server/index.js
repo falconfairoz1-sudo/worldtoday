@@ -36,6 +36,14 @@ const connectDB = require('./config/db');
 const app = express();
 const server = http.createServer(app);
 
+// CORS configuration for multiple origins
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://worldtoday.vercel.app',
+  'https://worldtoday-git-main-falconfairoz1-sudo.vercel.app',
+  'https://worldtoday-falconfairoz1-sudo.vercel.app'
+];
+
 // Socket.io for real-time notifications
 const io = new Server(server, {
   cors: {
@@ -54,14 +62,6 @@ io.on('connection', (socket) => {
 
 // Middleware
 app.use(helmet({ contentSecurityPolicy: false }));
-
-// CORS configuration for multiple origins
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://worldtoday.vercel.app',
-  'https://worldtoday-git-main-falconfairoz1-sudo.vercel.app',
-  'https://worldtoday-falconfairoz1-sudo.vercel.app'
-];
 
 app.use(cors({
   origin: function (origin, callback) {
