@@ -256,6 +256,17 @@ class NewsService {
 
   // Main entry point — PRIMARY → SECONDARY → TERTIARY → FREE UNLIMITED → RSS
   async fetchNews(country, category) {
+    // Validate and normalize parameters
+    if (!country || typeof country !== 'string') {
+      console.warn('Invalid country parameter:', country, '- defaulting to "us"');
+      country = 'us';
+    }
+    
+    if (!category || typeof category !== 'string') {
+      console.warn('Invalid category parameter:', category, '- defaulting to "general"');
+      category = 'general';
+    }
+    
     const cacheKey = `${country}:${category}`;
     const cached = this._cache.get(cacheKey);
     if (cached && Date.now() - cached.ts < 15 * 60 * 1000) {
@@ -414,6 +425,12 @@ class NewsService {
   async _currents(country, category) {
     const catMap = { general:'world', politics:'politics', business:'business', technology:'technology', sports:'sports', entertainment:'entertainment', health:'health', science:'science' };
     try {
+      // Ensure country is a valid string
+      if (!country || typeof country !== 'string') {
+        console.warn('Invalid country parameter for Currents API:', country);
+        return [];
+      }
+      
       const res = await axios.get('https://api.currentsapi.services/v1/latest-news', {
         params: { apiKey: this.key.currents(), country: country.toUpperCase(), category: catMap[category]||'world', language:'en', page_size: 20 },
         timeout: 12000,
@@ -608,6 +625,12 @@ class NewsService {
   // ── 9. Bing News Search (free, no key) ────────────────────────────────
   async _bingnews(country, category) {
     try {
+      // Ensure country is a valid string
+      if (!country || typeof country !== 'string') {
+        console.warn('Invalid country parameter for Bing News:', country);
+        return [];
+      }
+      
       const query = `${category} ${country} news`;
       const res = await axios.get('https://www.bing.com/news/search', {
         params: {
@@ -647,6 +670,12 @@ class NewsService {
   // ── 10. Google News RSS (free, unlimited) ──────────────────────────────
   async _googlenews(country, category) {
     try {
+      // Ensure country is a valid string
+      if (!country || typeof country !== 'string') {
+        console.warn('Invalid country parameter for Google News:', country);
+        return [];
+      }
+      
       const topicMap = {
         general: 'WORLD',
         politics: 'NATION',
