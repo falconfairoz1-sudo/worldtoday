@@ -1,35 +1,113 @@
 /* ── Magazine Layout ─────────────────────────────────────────────────── */
 .article-grid--magazine {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
 }
 
-/* Mobile: Stack everything */
+/* Default desktop layout for all screen sizes */
 .article-grid__featured,
 .article-grid__secondary,
 .article-grid__remaining {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
-/* Mobile: featured = full width single card */
+/* Featured article - spans 2 columns */
 .article-grid__featured {
+  grid-column: span 2;
   grid-template-columns: 1fr;
 }
 
-/* Mobile: secondary = 2 side-by-side cards */
+/* Secondary articles - spans 3 columns, 2x2 grid */
 .article-grid__secondary {
+  grid-column: span 3;
   grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
 }
 
-/* Mobile: remaining = 2 columns */
+/* Remaining articles - spans all 5 columns, 7 column grid */
 .article-grid__remaining {
-  grid-template-columns: repeat(2, 1fr);
+  grid-column: span 5;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
 }
 
-/* Small mobile: 1 column for secondary too */
-@media (max-width: 400px) {
+/* Force desktop layout class - can be applied via JavaScript */
+.force-desktop-layout .article-grid--magazine {
+  grid-template-columns: repeat(5, 1fr) !important;
+  gap: 8px !important;
+}
+
+.force-desktop-layout .article-grid__featured {
+  grid-column: span 2 !important;
+  grid-template-columns: 1fr !important;
+}
+
+.force-desktop-layout .article-grid__secondary {
+  grid-column: span 3 !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 8px !important;
+}
+
+.force-desktop-layout .article-grid__remaining {
+  grid-column: span 5 !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+  gap: 8px !important;
+}
+
+/* Force desktop layout when user requests desktop site on mobile */
+@media (min-width: 768px), (min-device-width: 768px) {
+  .article-grid--magazine {
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 8px !important;
+  }
+  
+  .article-grid__featured {
+    grid-column: span 2 !important;
+    grid-template-columns: 1fr !important;
+  }
+  
+  .article-grid__secondary {
+    grid-column: span 3 !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+  
+  .article-grid__remaining {
+    grid-column: span 5 !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    gap: 8px !important;
+  }
+}
+
+/* Only apply mobile layout for very small screens (phones in portrait) */
+@media (max-width: 480px) and (orientation: portrait) {
+  .article-grid--magazine {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .article-grid__featured {
+    grid-column: span 1;
+    grid-template-columns: 1fr;
+  }
+  
+  .article-grid__secondary {
+    grid-column: span 1;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  
+  .article-grid__remaining {
+    grid-column: span 1;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+/* Extra small phones - single column */
+@media (max-width: 360px) and (orientation: portrait) {
   .article-grid__secondary {
     grid-template-columns: 1fr;
   }
@@ -38,68 +116,7 @@
   }
 }
 
-/* Tablet: 3 columns */
-@media (min-width: 640px) {
-  .article-grid--magazine {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-  }
-  .article-grid__featured {
-    grid-column: span 3;
-  }
-  .article-grid__secondary {
-    grid-column: span 3;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-  }
-  .article-grid__remaining {
-    grid-column: span 3;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-  }
-}
-
-/* Desktop: 5 columns for top, 7 for bottom */
-@media (min-width: 768px) {
-  .article-grid--magazine {
-    grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
-  }
-  .article-grid__featured {
-    grid-column: span 2;
-  }
-  .article-grid__secondary {
-    grid-column: span 3;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-  }
-  .article-grid__remaining {
-    grid-column: span 5;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-  }
-}
-
-/* Large Desktop */
-@media (min-width: 1024px) {
-  .article-grid--magazine {
-    grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
-  }
-  .article-grid__featured {
-    grid-column: span 2;
-  }
-  .article-grid__secondary {
-    grid-column: span 3;
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .article-grid__remaining {
-    grid-column: span 5;
-    grid-template-columns: repeat(7, 1fr);
-  }
-}
-
-/* Extra Large */
+/* Large screens - enhanced layout */
 @media (min-width: 1280px) {
   .article-grid--magazine {
     grid-template-columns: repeat(10, 1fr);
