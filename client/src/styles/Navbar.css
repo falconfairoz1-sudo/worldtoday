@@ -248,8 +248,16 @@ html[data-theme="dark"] .navbar__logo-world {
 }
 .navbar__country-select:focus { border-color: var(--primary); }
 
-@media (max-width: 1200px) {
+@media (max-width: 767px) {
   .navbar__country-select { display: none; }
+}
+
+@media (min-width: 768px) and (max-width: 1200px) {
+  .navbar__country-select { 
+    display: block;
+    max-width: 120px;
+    font-size: 0.7rem;
+  }
 }
 
 /* Actions */
@@ -258,6 +266,12 @@ html[data-theme="dark"] .navbar__logo-world {
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .navbar__actions {
+    gap: 6px;
+  }
 }
 
 /* Search Bar */
@@ -406,6 +420,11 @@ html[data-theme="dark"] .navbar__logo-world {
   .navbar__logo-icon {
     width: 38px;
     height: 38px;
+  }
+  .navbar__country-select {
+    max-width: 100px;
+    font-size: 0.65rem;
+    padding: 4px 6px;
   }
 }
 
