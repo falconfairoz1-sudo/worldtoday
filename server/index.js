@@ -13,22 +13,21 @@ dns.setServers(["1.1.1.1","8.8.8.8"]);
 // Load .env from parent directory (root)
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
-// Import routes
-const authRoutes = require('./routes/auth');
-const newsRoutes = require('./routes/news');
-const userRoutes = require('./routes/user');
-const adminRoutes = require('./routes/admin');
-const categoryRoutes = require('./routes/category');
-const commentRoutes = require('./routes/comment');
-const countriesRoutes = require('./routes/countries');
-const reactionsRoutes = require('./routes/reactions');
-const notificationsRoutes = require('./routes/notifications');
-const rssRoutes = require('./routes/rss');
-const translateRoutes = require('./routes/translate');
-const newsletterRoutes = require('./routes/newsletter');
-const forumRoutes = require('./routes/forum');
-const sitemapRoutes = require('./routes/sitemap');
-const imageProxyRoutes = require('./routes/imageProxy');
+// Validate required environment variables
+const requiredEnvVars = ['MONGODB_URI', 'JWT_SECRET'];
+const missingEnvVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+if (missingEnvVars.length > 0) {
+  console.error('❌ Missing required environment variables:');
+  missingEnvVars.forEach(varName => {
+    console.error(`   - ${varName}`);
+  });
+  console.error('');
+  console.error('🔧 Please add these to your .env file or Render environment variables');
+  process.exit(1);
+}
+
+console.log('✅ Environment variables validated');
 
 // Import services
 const newsAggregator = require('./services/newsAggregator');
@@ -106,22 +105,35 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/news', newsRoutes);
-app.use('/api/user', userRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/categories', categoryRoutes);
-app.use('/api/comments', commentRoutes);
-app.use('/api/countries', countriesRoutes);
-app.use('/api/reactions', reactionsRoutes);
-app.use('/api/notifications', notificationsRoutes);
-app.use('/api/rss', rssRoutes);
-app.use('/api/translate', translateRoutes);
-app.use('/api/newsletter', newsletterRoutes);
-app.use('/api/forum', forumRoutes);
-app.use('/sitemap.xml', sitemapRoutes);
-app.use('/api/image-proxy', imageProxyRoutes);
+// Import routes with error handling
+const routes = [
+  { path: '/api/auth', file: './routes/auth' },
+  { path: '/api/news', file: './routes/news' },
+  { path: '/api/user', file: './routes/user' },
+  { path: '/api/admin', file: './routes/admin' },
+  { path: '/api/categories', file: './routes/category' },
+  { path: '/api/comments', file: './routes/comment' },
+  { path: '/api/countries', file: './routes/countries' },
+  { path: '/api/reactions', file: './routes/reactions' },
+  { path: '/api/notifications', file: './routes/notifications' },
+  { path: '/api/rss', file: './routes/rss' },
+  { path: '/api/translate', file: './routes/translate' },
+  { path: '/api/newsletter', file: './routes/newsletter' },
+  { path: '/api/forum', file: './routes/forum' },
+  { path: '/sitemap.xml', file: './routes/sitemap' },
+  { path: '/api/image-proxy', file: './routes/imageProxy' }
+];
+
+// Load routes safely
+routes.forEach(({ path, file }) => {
+  try {
+    const route = require(file);
+    app.use(path, route);
+    console.log(`✅ Loaded route: ${path}`);
+  } catch (error) {
+    console.error(`❌ Failed to load route ${path}:`, error.message);
+  }
+});
 
 // Health check
 app.get('/health', (req, res) => {
@@ -156,12 +168,26 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
 
 // Connect to DB then start server
 connectDB().then(() => {
-  newsAggregator.startAggregation();
+  console.log('✅ Database connected successfully');
+  
+  // Start news aggregation
+  try {
+    newsAggregator.startAggregation();
+    console.log('✅ News aggregator started');
+  } catch (err) {
+    console.warn('⚠️ News aggregator failed to start:', err.message);
+  }
 
   const PORT = process.env.PORT || 5000;
-  server.listen(PORT, () => {
+  server.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 WorldToday Server running on port ${PORT}`);
+    console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🔗 Health check: http://localhost:${PORT}/health`);
   });
+}).catch((error) => {
+  console.error('❌ Failed to connect to database:', error.message);
+  console.error('Full error:', error);
+  process.exit(1);
 });
 
 // Graceful shutdown
