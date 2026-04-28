@@ -26,6 +26,7 @@ export default function Home() {
   const [personalized, setPersonalized] = useState([]);
   const [feedMode, setFeedMode] = useState('top');
   const [loading, setLoading] = useState(true);
+  const [categoryLoading, setCategoryLoading] = useState(true);
   const [selectedCountry, setSelectedCountry] = useState(
     localStorage.getItem('worldtoday_country') || ''
   );
@@ -37,7 +38,11 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    console.log('🔄 Home page data refresh triggered');
     setLoading(true);
+    setCategoryLoading(true);
+    
+    // Fetch data
     fetchFeatured();
     fetchCategoryNews();
     if (user) fetchPersonalized();
@@ -46,87 +51,109 @@ export default function Home() {
 
   const fetchFeatured = async () => {
     try {
+      console.log('🔄 Fetching featured articles...');
       const TOP_CATEGORIES = ['politics', 'business', 'technology', 'sports', 'entertainment'];
-      const REST_CATEGORIES = ['health', 'science'];
-
-      const topPromises = TOP_CATEGORIES.map(id =>
-        api.get('/news', {
-          params: {
-            category: id,
-            limit: 5,
+      
+      // Fetch articles from each category
+      const promises = TOP_CATEGORIES.map(async (category) => {
+        try {
+          const params = { 
+            category, 
+            limit: 10,  // Increased limit to get more options
             ...(selectedCountry && { country: selectedCountry })
-          }
-        }).catch((error) => {
-          console.error(`Error fetching ${id}:`, error.message);
-          return { data: { articles: [] } };
-        })
-      );
+          };
+          
+          console.log(`📰 Fetching ${category} articles...`);
+          const res = await api.get('/news', { params });
+          const articles = res.data?.articles || res.data || [];
+          
+          console.log(`✅ ${category}: ${articles.length} articles`);
+          
+          // Prefer articles with images, but include all
+          const articlesWithImages = articles.filter(a => a.urlToImage && a.urlToImage.trim() !== '');
+          const articlesWithoutImages = articles.filter(a => !a.urlToImage || a.urlToImage.trim() === '');
+          
+          return {
+            category,
+            articles: [...articlesWithImages, ...articlesWithoutImages]
+          };
+        } catch (error) {
+          console.error(`❌ Error fetching ${category}:`, error.message);
+          return { category, articles: [] };
+        }
+      });
 
-      const restPromises = REST_CATEGORIES.map(id =>
-        api.get('/news', {
-          params: {
-            category: id,
-            limit: 10,
-            ...(selectedCountry && { country: selectedCountry })
-          }
-        }).catch(() => ({ data: { articles: [] } }))
-      );
-
-      const [topResults, restResults] = await Promise.all([
-        Promise.all(topPromises),
-        Promise.all(restPromises),
-      ]);
-
-      const topArticles = topResults.map(res => {
-        const articles = res.data?.articles || res.data || [];
-        return (
-          articles.find(a => a.urlToImage && a.urlToImage.trim() !== '') ||
-          articles[0] ||
-          null
-        );
+      const results = await Promise.all(promises);
+      
+      // Get the best article from each category (prefer with images)
+      const topArticles = results.map(({ category, articles }) => {
+        if (articles.length === 0) return null;
+        
+        // Prefer articles with images
+        const withImage = articles.find(a => a.urlToImage && a.urlToImage.trim() !== '');
+        return withImage || articles[0];
       }).filter(Boolean);
 
-      const usedUrls = new Set(topArticles.map(a => a.url));
+      console.log(`🎯 Selected ${topArticles.length} top articles`);
 
-      const restArticles = [...topResults, ...restResults]
-        .flatMap(res => res.data?.articles || res.data || [])
+      // Get remaining articles for the rest of the feed
+      const usedUrls = new Set(topArticles.map(a => a.url));
+      const remainingArticles = results
+        .flatMap(({ articles }) => articles)
         .filter(a => !usedUrls.has(a.url))
         .filter((a, i, self) => self.findIndex(x => x.url === a.url) === i)
         .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
 
-      setFeatured([...topArticles, ...restArticles].slice(0, 30));
+      const finalArticles = [...topArticles, ...remainingArticles].slice(0, 30);
+      console.log(`📋 Final featured articles: ${finalArticles.length}`);
+      
+      setFeatured(finalArticles);
     } catch (err) {
-      console.error('Failed to fetch featured news:', err);
+      console.error('❌ Failed to fetch featured news:', err);
+      // Set empty array if everything fails
+      setFeatured([]);
     } finally {
       setLoading(false);
     }
   };
 
   const fetchCategoryNews = async () => {
+    console.log('🔄 Fetching category news...');
     const results = {};
-    await Promise.allSettled(
-      CATEGORIES.map(async ({ id }) => {
-        try {
-          const params = { category: id, limit: 16 };
-          if (selectedCountry) params.country = selectedCountry;
-          const res = await api.get('/news', { params });
-          const articles = res.data?.articles || res.data || [];
-          
-          const articlesWithImages = articles.filter(article => 
-            article.urlToImage && article.urlToImage.trim() !== ''
-          );
-          const articlesWithoutImages = articles.filter(article => 
-            !article.urlToImage || article.urlToImage.trim() === ''
-          );
-          
-          const combined = [...articlesWithImages, ...articlesWithoutImages];
-          results[id] = combined.slice(0, 6);
-        } catch (e) {
-          results[id] = [];
-        }
-      })
-    );
+    
+    const promises = CATEGORIES.map(async ({ id, label }) => {
+      try {
+        const params = { category: id, limit: 16 };
+        if (selectedCountry) params.country = selectedCountry;
+        
+        console.log(`📰 Fetching ${label} (${id}) articles...`);
+        const res = await api.get('/news', { params });
+        const articles = res.data?.articles || res.data || [];
+        
+        console.log(`✅ ${label}: ${articles.length} articles`);
+        
+        // Prioritize articles with images
+        const articlesWithImages = articles.filter(article => 
+          article.urlToImage && article.urlToImage.trim() !== ''
+        );
+        const articlesWithoutImages = articles.filter(article => 
+          !article.urlToImage || article.urlToImage.trim() === ''
+        );
+        
+        const combined = [...articlesWithImages, ...articlesWithoutImages];
+        results[id] = combined.slice(0, 6);
+        
+        console.log(`📋 ${label}: Using ${results[id].length} articles (${articlesWithImages.length} with images)`);
+      } catch (error) {
+        console.error(`❌ Error fetching ${label} (${id}):`, error.message);
+        results[id] = [];
+      }
+    });
+    
+    await Promise.all(promises);
+    console.log('✅ Category news fetch completed');
     setCategoryNews(results);
+    setCategoryLoading(false);
   };
 
   const fetchPersonalized = async () => {
@@ -214,36 +241,66 @@ export default function Home() {
                   )}
 
                   {/* Category Sections */}
-                  {CATEGORIES.map(({ id, label, icon, color }) => {
-                    const articles = categoryNews[id];
-                    if (!articles || articles.length === 0) return null;
-                    return (
-                      <section
-                        key={id}
-                        className="home__section"
-                        aria-label={`${label} news`}
-                      >
-                        <div
-                          className="home__section-header"
-                          style={{ '--cat-color': color }}
+                  {categoryLoading ? (
+                    <div className="loading-spinner">
+                      <div className="spinner" />
+                      <p>Loading category news...</p>
+                    </div>
+                  ) : (
+                    CATEGORIES.map(({ id, label, icon, color }) => {
+                      const articles = categoryNews[id];
+                      if (!articles || articles.length === 0) {
+                        return (
+                          <section key={id} className="home__section" aria-label={`${label} news`}>
+                            <div className="home__section-header" style={{ '--cat-color': color }}>
+                              <div className="home__section-title">
+                                <span className="home__section-icon">{icon}</span>
+                                <h2>{label}</h2>
+                              </div>
+                              <Link to={`/category/${id}`} className="home__section-more">
+                                More →
+                              </Link>
+                            </div>
+                            <div className="home__category-grid">
+                              <div className="no-articles">
+                                <p>No {label.toLowerCase()} articles available at the moment.</p>
+                                <Link to={`/category/${id}`} className="btn btn-primary btn-sm">
+                                  Browse {label} →
+                                </Link>
+                              </div>
+                            </div>
+                          </section>
+                        );
+                      }
+                      
+                      return (
+                        <section
+                          key={id}
+                          className="home__section"
+                          aria-label={`${label} news`}
                         >
-                          <div className="home__section-title">
-                            <span className="home__section-icon">{icon}</span>
-                            <h2>{label}</h2>
+                          <div
+                            className="home__section-header"
+                            style={{ '--cat-color': color }}
+                          >
+                            <div className="home__section-title">
+                              <span className="home__section-icon">{icon}</span>
+                              <h2>{label}</h2>
+                            </div>
+                            <Link to={`/category/${id}`} className="home__section-more">
+                              More →
+                            </Link>
                           </div>
-                          <Link to={`/category/${id}`} className="home__section-more">
-                            More →
-                          </Link>
-                        </div>
-                        <div className="home__category-grid">
-                          {/* All articles equal size - no featured/rest distinction */}
-                          {articles.map(article => (
-                            <ArticleCard key={article._id} article={article} size="medium" />
-                          ))}
-                        </div>
-                      </section>
-                    );
-                  })}
+                          <div className="home__category-grid">
+                            {/* All articles equal size - no featured/rest distinction */}
+                            {articles.map(article => (
+                              <ArticleCard key={article._id} article={article} size="medium" />
+                            ))}
+                          </div>
+                        </section>
+                      );
+                    })
+                  )}
                 </>
               )}
             </main>

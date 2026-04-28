@@ -93,50 +93,175 @@ const enhancedApi = {
 
 // Mock data for development/fallback
 function getMockData(url) {
-  const mockArticles = [
-    {
-      _id: '1',
-      title: 'Breaking: Technology Advances in 2024',
-      description: 'Latest developments in artificial intelligence and machine learning are reshaping industries worldwide.',
-      content: 'The technology sector continues to evolve rapidly with new innovations...',
-      category: 'technology',
-      country: 'us',
-      urlToImage: 'https://picsum.photos/800/600?random=1',
-      source: { name: 'Tech News', url: 'https://example.com' },
-      publishedAt: new Date().toISOString(),
-      url: 'https://example.com/tech-news-1'
-    },
-    {
-      _id: '2',
-      title: 'Global Business Markets Show Growth',
-      description: 'International markets demonstrate positive trends as economic indicators improve.',
-      content: 'Business analysts report encouraging signs across multiple sectors...',
-      category: 'business',
-      country: 'us',
-      urlToImage: 'https://picsum.photos/800/600?random=2',
-      source: { name: 'Business Today', url: 'https://example.com' },
-      publishedAt: new Date().toISOString(),
-      url: 'https://example.com/business-news-1'
-    },
-    {
-      _id: '3',
-      title: 'Sports Championship Updates',
-      description: 'Latest results from major sporting events around the world.',
-      content: 'Sports fans celebrate as championships deliver exciting matches...',
-      category: 'sports',
-      country: 'us',
-      urlToImage: 'https://picsum.photos/800/600?random=3',
-      source: { name: 'Sports Network', url: 'https://example.com' },
-      publishedAt: new Date().toISOString(),
-      url: 'https://example.com/sports-news-1'
-    }
+  console.log('🎭 Generating mock data for:', url);
+  
+  // Extract category from URL if present
+  const urlParams = new URLSearchParams(url.split('?')[1] || '');
+  const category = urlParams.get('category') || 'general';
+  
+  const mockArticlesByCategory = {
+    politics: [
+      {
+        _id: 'pol1',
+        title: 'Political Leaders Meet for Global Summit',
+        description: 'World leaders gather to discuss international cooperation and policy reforms.',
+        content: 'In a historic gathering, political leaders from around the world...',
+        category: 'politics',
+        country: 'us',
+        urlToImage: 'https://picsum.photos/800/600?random=10',
+        source: { name: 'Political News', url: 'https://example.com' },
+        publishedAt: new Date().toISOString(),
+        url: 'https://example.com/politics-1'
+      },
+      {
+        _id: 'pol2',
+        title: 'New Policy Reforms Announced',
+        description: 'Government announces major policy changes affecting citizens nationwide.',
+        content: 'The government has announced significant policy reforms...',
+        category: 'politics',
+        country: 'us',
+        urlToImage: 'https://picsum.photos/800/600?random=11',
+        source: { name: 'Policy Today', url: 'https://example.com' },
+        publishedAt: new Date().toISOString(),
+        url: 'https://example.com/politics-2'
+      }
+    ],
+    business: [
+      {
+        _id: 'bus1',
+        title: 'Global Markets Show Strong Growth',
+        description: 'International markets demonstrate positive trends as economic indicators improve.',
+        content: 'Business analysts report encouraging signs across multiple sectors...',
+        category: 'business',
+        country: 'us',
+        urlToImage: 'https://picsum.photos/800/600?random=20',
+        source: { name: 'Business Today', url: 'https://example.com' },
+        publishedAt: new Date().toISOString(),
+        url: 'https://example.com/business-1'
+      },
+      {
+        _id: 'bus2',
+        title: 'Tech Stocks Reach New Heights',
+        description: 'Technology companies see unprecedented growth in market valuation.',
+        content: 'The technology sector continues to lead market growth...',
+        category: 'business',
+        country: 'us',
+        urlToImage: 'https://picsum.photos/800/600?random=21',
+        source: { name: 'Market Watch', url: 'https://example.com' },
+        publishedAt: new Date().toISOString(),
+        url: 'https://example.com/business-2'
+      }
+    ],
+    technology: [
+      {
+        _id: 'tech1',
+        title: 'AI Revolution Transforms Industries',
+        description: 'Latest developments in artificial intelligence are reshaping industries worldwide.',
+        content: 'The technology sector continues to evolve rapidly with new innovations...',
+        category: 'technology',
+        country: 'us',
+        urlToImage: 'https://picsum.photos/800/600?random=30',
+        source: { name: 'Tech News', url: 'https://example.com' },
+        publishedAt: new Date().toISOString(),
+        url: 'https://example.com/tech-1'
+      },
+      {
+        _id: 'tech2',
+        title: 'Breakthrough in Quantum Computing',
+        description: 'Scientists achieve major milestone in quantum computing development.',
+        content: 'Researchers have made significant progress in quantum computing...',
+        category: 'technology',
+        country: 'us',
+        urlToImage: 'https://picsum.photos/800/600?random=31',
+        source: { name: 'Science Tech', url: 'https://example.com' },
+        publishedAt: new Date().toISOString(),
+        url: 'https://example.com/tech-2'
+      }
+    ],
+    sports: [
+      {
+        _id: 'sport1',
+        title: 'Championship Finals Draw Record Crowds',
+        description: 'Latest results from major sporting events around the world.',
+        content: 'Sports fans celebrate as championships deliver exciting matches...',
+        category: 'sports',
+        country: 'us',
+        urlToImage: 'https://picsum.photos/800/600?random=40',
+        source: { name: 'Sports Network', url: 'https://example.com' },
+        publishedAt: new Date().toISOString(),
+        url: 'https://example.com/sports-1'
+      },
+      {
+        _id: 'sport2',
+        title: 'Olympic Preparations Underway',
+        description: 'Athletes prepare for upcoming international competitions.',
+        content: 'Olympic preparations are in full swing as athletes...',
+        category: 'sports',
+        country: 'us',
+        urlToImage: 'https://picsum.photos/800/600?random=41',
+        source: { name: 'Olympic News', url: 'https://example.com' },
+        publishedAt: new Date().toISOString(),
+        url: 'https://example.com/sports-2'
+      }
+    ],
+    entertainment: [
+      {
+        _id: 'ent1',
+        title: 'Hollywood Blockbuster Breaks Records',
+        description: 'Latest movie releases dominate box office worldwide.',
+        content: 'The entertainment industry sees record-breaking performances...',
+        category: 'entertainment',
+        country: 'us',
+        urlToImage: 'https://picsum.photos/800/600?random=50',
+        source: { name: 'Entertainment Weekly', url: 'https://example.com' },
+        publishedAt: new Date().toISOString(),
+        url: 'https://example.com/entertainment-1'
+      }
+    ],
+    health: [
+      {
+        _id: 'health1',
+        title: 'Medical Breakthrough in Treatment',
+        description: 'Scientists discover new treatment methods for common diseases.',
+        content: 'Medical researchers have made significant breakthroughs...',
+        category: 'health',
+        country: 'us',
+        urlToImage: 'https://picsum.photos/800/600?random=60',
+        source: { name: 'Health News', url: 'https://example.com' },
+        publishedAt: new Date().toISOString(),
+        url: 'https://example.com/health-1'
+      }
+    ],
+    science: [
+      {
+        _id: 'sci1',
+        title: 'Space Exploration Reaches New Milestone',
+        description: 'Space agencies achieve historic milestones in exploration.',
+        content: 'Space exploration continues to push boundaries...',
+        category: 'science',
+        country: 'us',
+        urlToImage: 'https://picsum.photos/800/600?random=70',
+        source: { name: 'Science Daily', url: 'https://example.com' },
+        publishedAt: new Date().toISOString(),
+        url: 'https://example.com/science-1'
+      }
+    ]
+  };
+
+  // Get articles for the requested category or general articles
+  const articles = mockArticlesByCategory[category] || [
+    ...mockArticlesByCategory.politics,
+    ...mockArticlesByCategory.business,
+    ...mockArticlesByCategory.technology,
+    ...mockArticlesByCategory.sports,
+    ...mockArticlesByCategory.entertainment
   ];
 
   if (url.includes('/news')) {
     return {
       data: {
-        articles: mockArticles,
-        total: mockArticles.length,
+        articles: articles,
+        total: articles.length,
         success: true
       }
     };
