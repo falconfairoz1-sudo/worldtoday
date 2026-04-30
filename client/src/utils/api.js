@@ -2,18 +2,18 @@ import axios from 'axios';
 
 // Use production backend for all environments
 const PRIMARY_API_URL = 'https://worldtoday.onrender.com/api';
-const FALLBACK_API_URL = 'https://worldtoday.onrender.com/api';
+const FALLBACK_API_URL = 'http://localhost:5000/api';
 
 // Create primary API instance
 const api = axios.create({
   baseURL: PRIMARY_API_URL,
-  timeout: 5000, // Reduced timeout for faster failure
+  timeout: 10000,
 });
 
 // Create fallback API instance
 const fallbackApi = axios.create({
   baseURL: FALLBACK_API_URL,
-  timeout: 5000, // Reduced timeout for faster failure
+  timeout: 10000,
 });
 
 // Add token to requests
@@ -28,26 +28,21 @@ const addAuthToken = (config) => {
 api.interceptors.request.use(addAuthToken);
 fallbackApi.interceptors.request.use(addAuthToken);
 
-// Enhanced API with fallback and better auth handling
+// Enhanced API with fallback
 const enhancedApi = {
   async get(url, config = {}) {
     try {
       const response = await api.get(url, config);
       return response;
     } catch (error) {
-      // If primary fails and we're not already using localhost, try fallback
+      // If primary fails, try fallback
       if (PRIMARY_API_URL !== FALLBACK_API_URL) {
         try {
           const response = await fallbackApi.get(url, config);
           return response;
         } catch (fallbackError) {
-          // Fallback failed too
+          // Both failed
         }
-      }
-      
-      // For auth endpoints, don't return mock data - throw the error
-      if (url.includes('/auth/') || url.includes('/user/')) {
-        throw error;
       }
       
       // If both fail, return mock data for development
@@ -57,73 +52,37 @@ const enhancedApi = {
 
   async post(url, data, config = {}) {
     try {
-      const response = await api.post(url, data, config);
-      return response;
+      return await api.post(url, data, config);
     } catch (error) {
-      // For auth endpoints, try fallback
       if (PRIMARY_API_URL !== FALLBACK_API_URL) {
-        try {
-          const response = await fallbackApi.post(url, data, config);
-          return response;
-        } catch (fallbackError) {
-          // Fallback failed too
-        }
+        return await fallbackApi.post(url, data, config);
       }
-      
-      // For auth endpoints, don't return mock data - throw the error
-      if (url.includes('/auth/')) {
-        throw error;
-      }
-      
       throw error;
     }
   },
 
   async put(url, data, config = {}) {
     try {
-      const response = await api.put(url, data, config);
-      return response;
+      return await api.put(url, data, config);
     } catch (error) {
       if (PRIMARY_API_URL !== FALLBACK_API_URL) {
-        try {
-          const response = await fallbackApi.put(url, data, config);
-          return response;
-        } catch (fallbackError) {
-          // Fallback failed too
-        }
+        return await fallbackApi.put(url, data, config);
       }
-      
-      // For auth endpoints, don't return mock data - throw the error
-      if (url.includes('/auth/') || url.includes('/user/')) {
-        throw error;
-      }
-      
       throw error;
     }
   },
 
   async delete(url, config = {}) {
     try {
-      const response = await api.delete(url, config);
-      return response;
+      return await api.delete(url, config);
     } catch (error) {
       if (PRIMARY_API_URL !== FALLBACK_API_URL) {
-        try {
-          const response = await fallbackApi.delete(url, config);
-          return response;
-        } catch (fallbackError) {
-          // Fallback failed too
-        }
+        return await fallbackApi.delete(url, config);
       }
-      
-      // For auth endpoints, don't return mock data - throw the error
-      if (url.includes('/auth/') || url.includes('/user/')) {
-        throw error;
-      }
-      
       throw error;
     }
   }
+};
 };
 
 // Mock data for development/fallback

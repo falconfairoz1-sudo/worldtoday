@@ -213,6 +213,7 @@ export default function Home() {
     });
     
     await Promise.all(promises);
+    console.log('✅ Category news fetch completed');
     setCategoryNews(results);
     setCategoryLoading(false);
   };

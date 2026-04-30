@@ -69,7 +69,7 @@ export const NewsProvider = ({ children }) => {
     if (!localStorage.getItem('country')) {
       detectLocation();
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const value = {
     country,

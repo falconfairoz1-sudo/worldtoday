@@ -29,15 +29,10 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await api.get('/auth/me');
       setUser(res.data);
-      
       // Load bookmarks
-      try {
-        const bookmarksRes = await api.get('/user/bookmarks');
-        const bookmarkIds = (bookmarksRes.data || []).map(a => a._id || a);
-        setBookmarks(bookmarkIds);
-      } catch (bookmarkError) {
-        setBookmarks([]);
-      }
+      const bookmarksRes = await api.get('/user/bookmarks');
+      const bookmarkIds = (bookmarksRes.data || []).map(a => a._id || a);
+      setBookmarks(bookmarkIds);
     } catch (error) {
       logout();
     } finally {

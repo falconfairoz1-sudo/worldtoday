@@ -17,7 +17,7 @@ export default function Forum() {
 
   useEffect(() => {
     fetchThreads();
-  }, [selectedTopic]);
+  }, [selectedTopic]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchThreads = async () => {
     setLoading(true);

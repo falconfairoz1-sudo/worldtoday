@@ -52,16 +52,17 @@ export default function Article() {
   useEffect(() => {
     fetchArticle();
     return () => {
-      if (ttsRef.current) window.speechSynthesis.cancel();
+      const currentTts = ttsRef.current;
+      if (currentTts) window.speechSynthesis.cancel();
     };
-  }, [id]);
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (article?.format === 'liveblog' && article?.isActive) {
       const interval = setInterval(checkLiveBlogUpdates, 30000);
       return () => clearInterval(interval);
     }
-  }, [article]);
+  }, [article]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (language !== 'en' && article) {
@@ -69,7 +70,7 @@ export default function Article() {
     } else {
       setTranslatedContent(null);
     }
-  }, [language, article]);
+  }, [language, article]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Save scroll position
   useEffect(() => {
