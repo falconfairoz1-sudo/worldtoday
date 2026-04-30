@@ -38,16 +38,12 @@ const Login = () => {
 
     try {
       setLoading(true);
-      console.log('🔐 Starting login process...');
       
       await login(formData.email, formData.password);
       
       toast.success('Login successful!');
-      console.log('✅ Login completed, navigating to home...');
       navigate('/');
     } catch (error) {
-      console.error('❌ Login error:', error);
-      
       let errorMessage = 'Login failed';
       
       if (error.response?.data?.message) {

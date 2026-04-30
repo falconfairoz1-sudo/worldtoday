@@ -7,13 +7,13 @@ const FALLBACK_API_URL = 'https://worldtoday.onrender.com/api';
 // Create primary API instance
 const api = axios.create({
   baseURL: PRIMARY_API_URL,
-  timeout: 10000,
+  timeout: 5000, // Reduced timeout for faster failure
 });
 
 // Create fallback API instance
 const fallbackApi = axios.create({
   baseURL: FALLBACK_API_URL,
-  timeout: 10000,
+  timeout: 5000, // Reduced timeout for faster failure
 });
 
 // Add token to requests
@@ -32,61 +32,46 @@ fallbackApi.interceptors.request.use(addAuthToken);
 const enhancedApi = {
   async get(url, config = {}) {
     try {
-      console.log(`🔍 Trying primary API: ${PRIMARY_API_URL}${url}`);
       const response = await api.get(url, config);
-      console.log('✅ Primary API success');
       return response;
     } catch (error) {
-      console.warn('❌ Primary API failed:', error.message);
-      
       // If primary fails and we're not already using localhost, try fallback
       if (PRIMARY_API_URL !== FALLBACK_API_URL) {
         try {
-          console.log(`🔄 Trying fallback API: ${FALLBACK_API_URL}${url}`);
           const response = await fallbackApi.get(url, config);
-          console.log('✅ Fallback API success');
           return response;
         } catch (fallbackError) {
-          console.error('❌ Fallback API also failed:', fallbackError.message);
+          // Fallback failed too
         }
       }
       
       // For auth endpoints, don't return mock data - throw the error
       if (url.includes('/auth/') || url.includes('/user/')) {
-        console.error('🚫 Auth/User endpoint failed, throwing error');
         throw error;
       }
       
       // If both fail, return mock data for development
-      console.log('🎭 Returning mock data');
       return getMockData(url);
     }
   },
 
   async post(url, data, config = {}) {
     try {
-      console.log(`🔍 Trying primary API POST: ${PRIMARY_API_URL}${url}`);
       const response = await api.post(url, data, config);
-      console.log('✅ Primary API POST success');
       return response;
     } catch (error) {
-      console.warn('❌ Primary API POST failed:', error.message);
-      
       // For auth endpoints, try fallback
       if (PRIMARY_API_URL !== FALLBACK_API_URL) {
         try {
-          console.log(`🔄 Trying fallback API POST: ${FALLBACK_API_URL}${url}`);
           const response = await fallbackApi.post(url, data, config);
-          console.log('✅ Fallback API POST success');
           return response;
         } catch (fallbackError) {
-          console.error('❌ Fallback API POST also failed:', fallbackError.message);
+          // Fallback failed too
         }
       }
       
       // For auth endpoints, don't return mock data - throw the error
       if (url.includes('/auth/')) {
-        console.error('🚫 Auth endpoint failed, throwing error');
         throw error;
       }
       
@@ -96,27 +81,20 @@ const enhancedApi = {
 
   async put(url, data, config = {}) {
     try {
-      console.log(`🔍 Trying primary API PUT: ${PRIMARY_API_URL}${url}`);
       const response = await api.put(url, data, config);
-      console.log('✅ Primary API PUT success');
       return response;
     } catch (error) {
-      console.warn('❌ Primary API PUT failed:', error.message);
-      
       if (PRIMARY_API_URL !== FALLBACK_API_URL) {
         try {
-          console.log(`🔄 Trying fallback API PUT: ${FALLBACK_API_URL}${url}`);
           const response = await fallbackApi.put(url, data, config);
-          console.log('✅ Fallback API PUT success');
           return response;
         } catch (fallbackError) {
-          console.error('❌ Fallback API PUT also failed:', fallbackError.message);
+          // Fallback failed too
         }
       }
       
       // For auth endpoints, don't return mock data - throw the error
       if (url.includes('/auth/') || url.includes('/user/')) {
-        console.error('🚫 Auth/User PUT endpoint failed, throwing error');
         throw error;
       }
       
@@ -126,27 +104,20 @@ const enhancedApi = {
 
   async delete(url, config = {}) {
     try {
-      console.log(`🔍 Trying primary API DELETE: ${PRIMARY_API_URL}${url}`);
       const response = await api.delete(url, config);
-      console.log('✅ Primary API DELETE success');
       return response;
     } catch (error) {
-      console.warn('❌ Primary API DELETE failed:', error.message);
-      
       if (PRIMARY_API_URL !== FALLBACK_API_URL) {
         try {
-          console.log(`🔄 Trying fallback API DELETE: ${FALLBACK_API_URL}${url}`);
           const response = await fallbackApi.delete(url, config);
-          console.log('✅ Fallback API DELETE success');
           return response;
         } catch (fallbackError) {
-          console.error('❌ Fallback API DELETE also failed:', fallbackError.message);
+          // Fallback failed too
         }
       }
       
       // For auth endpoints, don't return mock data - throw the error
       if (url.includes('/auth/') || url.includes('/user/')) {
-        console.error('🚫 Auth/User DELETE endpoint failed, throwing error');
         throw error;
       }
       
@@ -157,13 +128,9 @@ const enhancedApi = {
 
 // Mock data for development/fallback
 function getMockData(url) {
-  console.log('🎭 Generating mock data for:', url);
-  
   // Extract category from URL if present
   const urlParams = new URLSearchParams(url.split('?')[1] || '');
   const requestedCategory = urlParams.get('category') || 'general';
-  
-  console.log(`🎯 Mock data requested for category: ${requestedCategory}`);
   
   const mockArticlesByCategory = {
     politics: [
@@ -331,7 +298,6 @@ function getMockData(url) {
   
   if (requestedCategory && requestedCategory !== 'all' && requestedCategory !== 'general') {
     articles = mockArticlesByCategory[requestedCategory] || [];
-    console.log(`🎯 Returning ${articles.length} mock articles for category: ${requestedCategory}`);
   } else {
     // For 'all' or 'general', return mixed articles
     articles = [
@@ -341,7 +307,6 @@ function getMockData(url) {
       ...mockArticlesByCategory.sports,
       ...mockArticlesByCategory.entertainment
     ];
-    console.log(`🎯 Returning ${articles.length} mixed mock articles`);
   }
 
   if (url.includes('/news')) {

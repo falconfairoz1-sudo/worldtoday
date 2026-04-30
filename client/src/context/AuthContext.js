@@ -27,9 +27,7 @@ export const AuthProvider = ({ children }) => {
 
   const loadUser = async () => {
     try {
-      console.log('👤 Loading user profile...');
       const res = await api.get('/auth/me');
-      console.log('✅ User profile loaded:', res.data);
       setUser(res.data);
       
       // Load bookmarks
@@ -37,13 +35,10 @@ export const AuthProvider = ({ children }) => {
         const bookmarksRes = await api.get('/user/bookmarks');
         const bookmarkIds = (bookmarksRes.data || []).map(a => a._id || a);
         setBookmarks(bookmarkIds);
-        console.log('✅ Bookmarks loaded:', bookmarkIds.length);
       } catch (bookmarkError) {
-        console.warn('⚠️ Failed to load bookmarks:', bookmarkError.message);
         setBookmarks([]);
       }
     } catch (error) {
-      console.error('❌ Failed to load user:', error.message);
       logout();
     } finally {
       setLoading(false);
@@ -52,9 +47,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      console.log('🔐 Attempting login for:', email);
       const res = await api.post('/auth/login', { email, password });
-      console.log('✅ Login API response:', res.data);
       
       const { token: newToken, user: userData } = res.data;
       
@@ -67,23 +60,15 @@ export const AuthProvider = ({ children }) => {
       setToken(newToken);
       setUser(userData || res.data);
       
-      console.log('✅ Login successful, user set:', userData || res.data);
       return res.data;
     } catch (error) {
-      console.error('❌ Login error details:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status
-      });
       throw error;
     }
   };
 
   const register = async (name, email, password, country, language) => {
     try {
-      console.log('📝 Attempting registration for:', email);
       const res = await api.post('/auth/register', { name, email, password, country, language });
-      console.log('✅ Register API response:', res.data);
       
       const { token: newToken, user: userData } = res.data;
       
@@ -96,14 +81,8 @@ export const AuthProvider = ({ children }) => {
       setToken(newToken);
       setUser(userData || res.data);
       
-      console.log('✅ Registration successful, user set:', userData || res.data);
       return res.data;
     } catch (error) {
-      console.error('❌ Registration error details:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status
-      });
       throw error;
     }
   };

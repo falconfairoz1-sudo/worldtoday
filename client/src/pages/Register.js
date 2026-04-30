@@ -54,7 +54,6 @@ const Register = () => {
 
     try {
       setLoading(true);
-      console.log('📝 Starting registration process...');
       
       await register(
         formData.name,
@@ -65,11 +64,8 @@ const Register = () => {
       );
       
       toast.success('Registration successful!');
-      console.log('✅ Registration completed, navigating to home...');
       navigate('/');
     } catch (error) {
-      console.error('❌ Registration error:', error);
-      
       let errorMessage = 'Registration failed';
       
       if (error.response?.data?.message) {

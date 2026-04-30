@@ -6,7 +6,6 @@ import BreakingNewsTicker from '../components/BreakingNewsTicker';
 import ArticleCard from '../components/article/ArticleCard';
 import ArticleGrid from '../components/article/ArticleGrid';
 import Sidebar from '../components/layout/Sidebar';
-import AuthStatus from '../components/AuthStatus';
 import api from '../utils/api';
 import '../styles/Home.css';
 
@@ -40,20 +39,23 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    console.log('🔄 Home page data refresh triggered');
     setLoading(true);
     setCategoryLoading(true);
     
-    // Fetch data
-    fetchFeatured();
-    fetchCategoryNews();
-    if (user) fetchPersonalized();
+    // Delay initial data fetching to improve perceived performance
+    const timer = setTimeout(() => {
+      // Fetch data
+      fetchFeatured();
+      fetchCategoryNews();
+      if (user) fetchPersonalized();
+    }, 50);
+
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCountry, user]);
 
   const fetchFeatured = async () => {
     try {
-      console.log('🔄 Fetching featured articles...');
       const TOP_CATEGORIES = ['politics', 'business', 'technology', 'sports', 'entertainment'];
       
       // Fetch articles from each category with explicit category filtering
@@ -164,7 +166,6 @@ export default function Home() {
   };
 
   const fetchCategoryNews = async () => {
-    console.log('🔄 Fetching category news...');
     const results = {};
     
     const promises = CATEGORIES.map(async ({ id, label }) => {
@@ -201,14 +202,9 @@ export default function Home() {
         const combined = [...articlesWithImages, ...articlesWithoutImages];
         results[id] = combined.slice(0, 6);
         
-        console.log(`📋 ${label}: Using ${results[id].length} articles (${articlesWithImages.length} with images)`);
-        
-        // Log sample articles for debugging
-        if (results[id].length > 0) {
-          console.log(`📄 Sample ${label} articles:`);
-          results[id].slice(0, 2).forEach((article, index) => {
-            console.log(`  ${index + 1}. [${article.category}] ${article.title?.substring(0, 40)}...`);
-          });
+        // Log sample articles for debugging only in development
+        if (process.env.NODE_ENV === 'development' && results[id].length > 0) {
+          console.log(`📋 ${label}: Using ${results[id].length} articles`);
         }
       } catch (error) {
         console.error(`❌ Error fetching ${label} (${id}):`, error.message);
@@ -217,7 +213,6 @@ export default function Home() {
     });
     
     await Promise.all(promises);
-    console.log('✅ Category news fetch completed');
     setCategoryNews(results);
     setCategoryLoading(false);
   };
@@ -248,9 +243,6 @@ export default function Home() {
         <meta property="og:type" content="website" />
         <link rel="alternate" type="application/rss+xml" title="WorldToday RSS" href="/api/rss/breaking" />
       </Helmet>
-
-      {/* Temporary Auth Status Component */}
-      <AuthStatus />
 
       {/* Breaking News Ticker */}
       <BreakingNewsTicker />
