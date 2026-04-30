@@ -243,10 +243,19 @@ html[data-theme="dark"] .navbar__logo-world {
   cursor: pointer;
   outline: none;
   max-width: 140px;
-  font-family: var(--font-ui);
+  font-family: var(--font-ui), "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", "EmojiOne Color", sans-serif;
   transition: border-color var(--transition);
+  -webkit-font-feature-settings: "liga" on, "calt" on;
+  font-feature-settings: "liga" on, "calt" on;
 }
 .navbar__country-select:focus { border-color: var(--primary); }
+
+.navbar__country-select option {
+  font-family: var(--font-ui), "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", "EmojiOne Color", sans-serif;
+  padding: 4px 8px;
+  -webkit-font-feature-settings: "liga" on, "calt" on;
+  font-feature-settings: "liga" on, "calt" on;
+}
 
 @media (max-width: 767px) {
   .navbar__country-select { display: none; }
@@ -257,6 +266,7 @@ html[data-theme="dark"] .navbar__logo-world {
     display: block;
     max-width: 120px;
     font-size: 0.7rem;
+    font-family: var(--font-ui), "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", "EmojiOne Color", sans-serif;
   }
 }
 
@@ -424,6 +434,8 @@ html[data-theme="dark"] .navbar__logo-world {
   .navbar__country-select {
     max-width: 100px;
     font-size: 0.65rem;
+    font-family: var(--font-ui), "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", "EmojiOne Color", sans-serif;
+  }
     padding: 4px 6px;
   }
 }
