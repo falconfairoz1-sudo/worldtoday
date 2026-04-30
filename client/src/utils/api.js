@@ -83,7 +83,6 @@ const enhancedApi = {
     }
   }
 };
-};
 
 // Mock data for development/fallback
 function getMockData(url) {

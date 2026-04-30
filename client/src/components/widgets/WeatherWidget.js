@@ -54,7 +54,7 @@ export default function WeatherWidget() {
     } else {
       fetchDefaultWeather();
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const fetchLocationAndWeather = async (lat, lon) => {
     try {

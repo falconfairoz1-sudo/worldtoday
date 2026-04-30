@@ -166,6 +166,7 @@ export default function Home() {
   };
 
   const fetchCategoryNews = async () => {
+    console.log('🔄 Fetching category news...');
     const results = {};
     
     const promises = CATEGORIES.map(async ({ id, label }) => {
@@ -213,7 +214,6 @@ export default function Home() {
     });
     
     await Promise.all(promises);
-    console.log('✅ Category news fetch completed');
     setCategoryNews(results);
     setCategoryLoading(false);
   };

@@ -14,7 +14,7 @@ export default function CommentSection({ articleId }) {
 
   useEffect(() => {
     fetchComments();
-  }, [articleId, sortOrder]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [articleId, sortOrder]);
 
   const fetchComments = async () => {
     try {

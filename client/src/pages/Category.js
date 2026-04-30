@@ -43,7 +43,7 @@ export default function Category() {
     setArticles([]);
     setPage(1);
     fetchArticles(1);
-  }, [category, selectedCountry, filter]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [category, selectedCountry, filter]);
 
   const fetchArticles = async (p) => {
     setLoading(true);

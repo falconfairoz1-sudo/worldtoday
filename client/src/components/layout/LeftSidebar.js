@@ -170,7 +170,7 @@ export default function LeftSidebar() {
                 {!collapsed && (
                   <span className="leftsidebar__section-title">{section.title}</span>
                 )}
-                <ul className="leftsidebar__nav" role="list">
+                <ul className="leftsidebar__nav">
                   {visibleItems.map(item => (
                     <li key={item.path}>
                       <Link
