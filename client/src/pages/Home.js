@@ -55,51 +55,59 @@ export default function Home() {
       console.log('🔄 Fetching featured articles...');
       const TOP_CATEGORIES = ['politics', 'business', 'technology', 'sports', 'entertainment'];
       
-      // Fetch articles from each category
-      const promises = TOP_CATEGORIES.map(async (category) => {
+      // Fetch articles from each category with explicit category filtering
+      const categoryPromises = TOP_CATEGORIES.map(async (categoryName) => {
         try {
           const params = { 
-            category, 
-            limit: 10,  // Get more options to choose from
-            ...(selectedCountry && { country: selectedCountry })
+            category: categoryName,  // Explicit category
+            limit: 5,  // Get 5 options per category
+            ...(selectedCountry && selectedCountry !== '' && { country: selectedCountry })
           };
           
-          console.log(`📰 Fetching ${category} articles...`);
+          console.log(`📰 Fetching ${categoryName} articles with params:`, params);
           const res = await api.get('/news', { params });
-          const articles = res.data?.articles || res.data || [];
+          const articles = res.data?.articles || [];
           
-          console.log(`✅ ${category}: ${articles.length} articles`);
+          console.log(`✅ ${categoryName}: ${articles.length} articles received`);
           
-          // Prefer articles with images, but include all
-          const articlesWithImages = articles.filter(a => a.urlToImage && a.urlToImage.trim() !== '');
-          const articlesWithoutImages = articles.filter(a => !a.urlToImage || a.urlToImage.trim() === '');
+          // Verify articles are actually from the requested category
+          const correctCategoryArticles = articles.filter(article => 
+            article.category === categoryName
+          );
+          
+          if (correctCategoryArticles.length !== articles.length) {
+            console.warn(`⚠️ ${categoryName}: ${articles.length - correctCategoryArticles.length} articles had wrong category`);
+          }
           
           return {
-            category,
-            articles: [...articlesWithImages, ...articlesWithoutImages]
+            category: categoryName,
+            articles: correctCategoryArticles
           };
         } catch (error) {
-          console.error(`❌ Error fetching ${category}:`, error.message);
-          return { category, articles: [] };
+          console.error(`❌ Error fetching ${categoryName}:`, error.message);
+          return { category: categoryName, articles: [] };
         }
       });
 
-      const results = await Promise.all(promises);
+      const categoryResults = await Promise.all(categoryPromises);
       
-      // IMPORTANT: Get exactly ONE article from each category for the top 5
+      // Select exactly ONE article from each category for the top 5
       const topFiveArticles = [];
       
-      results.forEach(({ category, articles }) => {
+      categoryResults.forEach(({ category, articles }) => {
         if (articles.length > 0) {
           // Prefer articles with images
           const withImage = articles.find(a => a.urlToImage && a.urlToImage.trim() !== '');
           const selectedArticle = withImage || articles[0];
           
-          // Add category info for debugging
-          selectedArticle._categorySource = category;
-          topFiveArticles.push(selectedArticle);
-          
-          console.log(`🎯 Selected for top row - ${category}: "${selectedArticle.title}"`);
+          // Ensure the article has the correct category
+          if (selectedArticle.category === category) {
+            selectedArticle._categorySource = category;
+            topFiveArticles.push(selectedArticle);
+            console.log(`🎯 Selected for top row - ${category}: "${selectedArticle.title?.substring(0, 50)}..."`);
+          } else {
+            console.warn(`⚠️ Skipping article with wrong category: expected ${category}, got ${selectedArticle.category}`);
+          }
         } else {
           console.warn(`⚠️ No articles available for ${category}`);
         }
@@ -107,9 +115,34 @@ export default function Home() {
 
       console.log(`🎯 Top 5 articles from different categories: ${topFiveArticles.length}`);
       
-      // Get remaining articles for the rest of the feed (excluding the top 5)
+      // If we don't have 5 articles, fill with general articles
+      if (topFiveArticles.length < 5) {
+        console.log(`🔄 Only got ${topFiveArticles.length} category articles, fetching general articles...`);
+        try {
+          const generalParams = { 
+            category: 'general',
+            limit: 10,
+            ...(selectedCountry && selectedCountry !== '' && { country: selectedCountry })
+          };
+          const generalRes = await api.get('/news', { params: generalParams });
+          const generalArticles = generalRes.data?.articles || [];
+          
+          // Add general articles to fill the gap
+          const usedUrls = new Set(topFiveArticles.map(a => a.url));
+          const additionalArticles = generalArticles
+            .filter(a => !usedUrls.has(a.url))
+            .slice(0, 5 - topFiveArticles.length);
+            
+          topFiveArticles.push(...additionalArticles);
+          console.log(`📰 Added ${additionalArticles.length} general articles`);
+        } catch (error) {
+          console.error('❌ Error fetching general articles:', error);
+        }
+      }
+      
+      // Get remaining articles for the rest of the feed
       const usedUrls = new Set(topFiveArticles.map(a => a.url));
-      const remainingArticles = results
+      const remainingArticles = categoryResults
         .flatMap(({ articles }) => articles)
         .filter(a => !usedUrls.has(a.url))
         .filter((a, i, self) => self.findIndex(x => x.url === a.url) === i)
@@ -117,7 +150,7 @@ export default function Home() {
 
       // Combine: Top 5 (different categories) + remaining articles
       const finalArticles = [...topFiveArticles, ...remainingArticles].slice(0, 30);
-      console.log(`📋 Final featured articles: ${finalArticles.length} (Top 5 from different categories + ${remainingArticles.length} others)`);
+      console.log(`📋 Final featured articles: ${finalArticles.length} (Top ${topFiveArticles.length} from different categories + ${remainingArticles.length} others)`);
       
       setFeatured(finalArticles);
     } catch (err) {
@@ -135,20 +168,32 @@ export default function Home() {
     
     const promises = CATEGORIES.map(async ({ id, label }) => {
       try {
-        const params = { category: id, limit: 16 };
-        if (selectedCountry) params.country = selectedCountry;
+        const params = { 
+          category: id, 
+          limit: 16,
+          ...(selectedCountry && selectedCountry !== '' && { country: selectedCountry })
+        };
         
-        console.log(`📰 Fetching ${label} (${id}) articles...`);
+        console.log(`📰 Fetching ${label} (${id}) articles with params:`, params);
         const res = await api.get('/news', { params });
-        const articles = res.data?.articles || res.data || [];
+        const articles = res.data?.articles || [];
         
-        console.log(`✅ ${label}: ${articles.length} articles`);
+        console.log(`✅ ${label}: ${articles.length} articles received`);
+        
+        // Verify articles are actually from the requested category
+        const correctCategoryArticles = articles.filter(article => 
+          article.category === id
+        );
+        
+        if (correctCategoryArticles.length !== articles.length) {
+          console.warn(`⚠️ ${label}: ${articles.length - correctCategoryArticles.length} articles had wrong category`);
+        }
         
         // Prioritize articles with images
-        const articlesWithImages = articles.filter(article => 
+        const articlesWithImages = correctCategoryArticles.filter(article => 
           article.urlToImage && article.urlToImage.trim() !== ''
         );
-        const articlesWithoutImages = articles.filter(article => 
+        const articlesWithoutImages = correctCategoryArticles.filter(article => 
           !article.urlToImage || article.urlToImage.trim() === ''
         );
         
@@ -156,6 +201,14 @@ export default function Home() {
         results[id] = combined.slice(0, 6);
         
         console.log(`📋 ${label}: Using ${results[id].length} articles (${articlesWithImages.length} with images)`);
+        
+        // Log sample articles for debugging
+        if (results[id].length > 0) {
+          console.log(`📄 Sample ${label} articles:`);
+          results[id].slice(0, 2).forEach((article, index) => {
+            console.log(`  ${index + 1}. [${article.category}] ${article.title?.substring(0, 40)}...`);
+          });
+        }
       } catch (error) {
         console.error(`❌ Error fetching ${label} (${id}):`, error.message);
         results[id] = [];

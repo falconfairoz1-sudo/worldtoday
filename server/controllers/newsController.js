@@ -40,53 +40,55 @@ exports.getNews = async (req, res) => {
       sortBy = 'publishedAt'
     } = req.query;
 
+    console.log(`📰 API Request - Category: ${category}, Country: ${country}, Page: ${page}`);
+
     // Create cache key
     const cacheKey = `news:${country}:${category}:${page}:${limit}:${search}:${format}:${section}:${sortBy}`;
     
     // Check cache first
     const cached = getCached(cacheKey);
     if (cached) {
+      console.log(`💾 Cache hit for: ${cacheKey}`);
       return res.json(cached);
     }
 
     const query = { isFakeNews: false };
 
-    // Country filter — only apply if articles exist for that country
-    if (country) {
-      const countryCount = await Article.countDocuments({ country, isFakeNews: false });
-      if (countryCount > 0) {
-        query.country = country;
-      }
-      // else: silently drop country filter and show all countries
+    // Category filter - STRICT: only show articles from requested category
+    if (category && category !== 'all' && category !== 'general') {
+      query.category = category;
+      console.log(`🏷️ Filtering by category: ${category}`);
     }
 
-    // Category filter — apply, but fall back to all categories if none found
-    if (category && category !== 'all') {
-      const catQuery = { ...query, category };
-      const catCount = await Article.countDocuments(catQuery);
-      if (catCount > 0) {
-        query.category = category;
-      } else {
-        // No articles for this category+country combo — drop country restriction
-        delete query.country;
-        const catCountGlobal = await Article.countDocuments({ category, isFakeNews: false });
-        if (catCountGlobal > 0) {
-          query.category = category;
-        }
-        // If still nothing, show all (no category filter)
-      }
+    // Country filter - apply if specified
+    if (country && country !== 'all') {
+      query.country = country;
+      console.log(`🌍 Filtering by country: ${country}`);
     }
 
-    if (format) query.format = format;
-    if (section) query.section = section;
+    // Section filter
+    if (section) {
+      query.section = section;
+      console.log(`📂 Filtering by section: ${section}`);
+    }
 
+    // Format filter
+    if (format) {
+      query.format = format;
+      console.log(`📄 Filtering by format: ${format}`);
+    }
+
+    // Search filter
     if (search) {
       query.$or = [
         { title: { $regex: search, $options: 'i' } },
         { description: { $regex: search, $options: 'i' } },
         { tags: { $in: [new RegExp(search, 'i')] } }
       ];
+      console.log(`🔍 Search query: ${search}`);
     }
+
+    console.log(`🔎 MongoDB Query:`, JSON.stringify(query, null, 2));
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
@@ -100,11 +102,22 @@ exports.getNews = async (req, res) => {
       Article.countDocuments(query)
     ]);
 
+    console.log(`📊 Found ${articles.length} articles (${total} total) for query`);
+    
+    // Log first few articles for debugging
+    if (articles.length > 0) {
+      console.log(`📋 Sample articles:`);
+      articles.slice(0, 3).forEach((article, index) => {
+        console.log(`  ${index + 1}. [${article.category}] ${article.title?.substring(0, 50)}...`);
+      });
+    }
+
     const result = {
       articles,
       currentPage: parseInt(page),
       totalPages: Math.ceil(total / parseInt(limit)),
-      totalArticles: total
+      totalArticles: total,
+      query: query // Include query for debugging
     };
 
     // Cache the result
@@ -114,8 +127,8 @@ exports.getNews = async (req, res) => {
     res.set('Cache-Control', 'public, max-age=300');
     res.json(result);
   } catch (error) {
-    console.error('Get news error:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('❌ Get news error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 

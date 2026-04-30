@@ -97,7 +97,9 @@ function getMockData(url) {
   
   // Extract category from URL if present
   const urlParams = new URLSearchParams(url.split('?')[1] || '');
-  const category = urlParams.get('category') || 'general';
+  const requestedCategory = urlParams.get('category') || 'general';
+  
+  console.log(`🎯 Mock data requested for category: ${requestedCategory}`);
   
   const mockArticlesByCategory = {
     politics: [
@@ -260,21 +262,31 @@ function getMockData(url) {
     ]
   };
 
-  // Get articles for the requested category or general articles
-  const articles = mockArticlesByCategory[category] || [
-    ...mockArticlesByCategory.politics,
-    ...mockArticlesByCategory.business,
-    ...mockArticlesByCategory.technology,
-    ...mockArticlesByCategory.sports,
-    ...mockArticlesByCategory.entertainment
-  ];
+  // Return articles for the specific requested category
+  let articles = [];
+  
+  if (requestedCategory && requestedCategory !== 'all' && requestedCategory !== 'general') {
+    articles = mockArticlesByCategory[requestedCategory] || [];
+    console.log(`🎯 Returning ${articles.length} mock articles for category: ${requestedCategory}`);
+  } else {
+    // For 'all' or 'general', return mixed articles
+    articles = [
+      ...mockArticlesByCategory.politics,
+      ...mockArticlesByCategory.business,
+      ...mockArticlesByCategory.technology,
+      ...mockArticlesByCategory.sports,
+      ...mockArticlesByCategory.entertainment
+    ];
+    console.log(`🎯 Returning ${articles.length} mixed mock articles`);
+  }
 
   if (url.includes('/news')) {
     return {
       data: {
         articles: articles,
         total: articles.length,
-        success: true
+        success: true,
+        query: { category: requestedCategory } // Include for debugging
       }
     };
   }
