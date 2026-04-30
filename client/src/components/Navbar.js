@@ -199,9 +199,17 @@ export default function Navbar() {
               <div className="navbar__auth-links">
                 <Link to="/login" className="navbar__auth-link">Login</Link>
                 <Link to="/register" className="btn btn-primary btn-sm">Subscribe</Link>
+                {/* Debug: Show auth status */}
+                <span style={{fontSize: '10px', color: '#666', marginLeft: '8px'}}>
+                  🔓 Not logged in
+                </span>
               </div>
             ) : (
               <div className="navbar__user-area">
+                {/* Debug: Show auth status */}
+                <span style={{fontSize: '10px', color: '#666', marginRight: '8px'}}>
+                  🔐 Logged in as {user.name}
+                </span>
                 {/* Notification Bell */}
                 <Link to="/notifications" className="navbar__notif-btn" aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}>
                   🔔

@@ -54,6 +54,8 @@ const Register = () => {
 
     try {
       setLoading(true);
+      console.log('📝 Starting registration process...');
+      
       await register(
         formData.name,
         formData.email,
@@ -61,11 +63,28 @@ const Register = () => {
         formData.country,
         formData.language
       );
+      
       toast.success('Registration successful!');
+      console.log('✅ Registration completed, navigating to home...');
       navigate('/');
     } catch (error) {
-      console.error('Register error:', error);
-      toast.error(error.response?.data?.message || 'Registration failed');
+      console.error('❌ Registration error:', error);
+      
+      let errorMessage = 'Registration failed';
+      
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      } else if (error.response?.status === 400) {
+        errorMessage = 'User already exists or invalid data';
+      } else if (error.response?.status >= 500) {
+        errorMessage = 'Server error. Please try again later.';
+      } else if (!navigator.onLine) {
+        errorMessage = 'No internet connection. Please check your network.';
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

@@ -38,12 +38,31 @@ const Login = () => {
 
     try {
       setLoading(true);
+      console.log('🔐 Starting login process...');
+      
       await login(formData.email, formData.password);
+      
       toast.success('Login successful!');
+      console.log('✅ Login completed, navigating to home...');
       navigate('/');
     } catch (error) {
-      console.error('Login error:', error);
-      toast.error(error.response?.data?.message || 'Login failed');
+      console.error('❌ Login error:', error);
+      
+      let errorMessage = 'Login failed';
+      
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      } else if (error.response?.status === 401) {
+        errorMessage = 'Invalid email or password';
+      } else if (error.response?.status >= 500) {
+        errorMessage = 'Server error. Please try again later.';
+      } else if (!navigator.onLine) {
+        errorMessage = 'No internet connection. Please check your network.';
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

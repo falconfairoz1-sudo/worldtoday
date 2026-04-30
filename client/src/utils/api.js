@@ -28,7 +28,7 @@ const addAuthToken = (config) => {
 api.interceptors.request.use(addAuthToken);
 fallbackApi.interceptors.request.use(addAuthToken);
 
-// Enhanced API with fallback
+// Enhanced API with fallback and better auth handling
 const enhancedApi = {
   async get(url, config = {}) {
     try {
@@ -51,6 +51,12 @@ const enhancedApi = {
         }
       }
       
+      // For auth endpoints, don't return mock data - throw the error
+      if (url.includes('/auth/') || url.includes('/user/')) {
+        console.error('🚫 Auth/User endpoint failed, throwing error');
+        throw error;
+      }
+      
       // If both fail, return mock data for development
       console.log('🎭 Returning mock data');
       return getMockData(url);
@@ -59,33 +65,91 @@ const enhancedApi = {
 
   async post(url, data, config = {}) {
     try {
-      return await api.post(url, data, config);
+      console.log(`🔍 Trying primary API POST: ${PRIMARY_API_URL}${url}`);
+      const response = await api.post(url, data, config);
+      console.log('✅ Primary API POST success');
+      return response;
     } catch (error) {
+      console.warn('❌ Primary API POST failed:', error.message);
+      
+      // For auth endpoints, try fallback
       if (PRIMARY_API_URL !== FALLBACK_API_URL) {
-        return await fallbackApi.post(url, data, config);
+        try {
+          console.log(`🔄 Trying fallback API POST: ${FALLBACK_API_URL}${url}`);
+          const response = await fallbackApi.post(url, data, config);
+          console.log('✅ Fallback API POST success');
+          return response;
+        } catch (fallbackError) {
+          console.error('❌ Fallback API POST also failed:', fallbackError.message);
+        }
       }
+      
+      // For auth endpoints, don't return mock data - throw the error
+      if (url.includes('/auth/')) {
+        console.error('🚫 Auth endpoint failed, throwing error');
+        throw error;
+      }
+      
       throw error;
     }
   },
 
   async put(url, data, config = {}) {
     try {
-      return await api.put(url, data, config);
+      console.log(`🔍 Trying primary API PUT: ${PRIMARY_API_URL}${url}`);
+      const response = await api.put(url, data, config);
+      console.log('✅ Primary API PUT success');
+      return response;
     } catch (error) {
+      console.warn('❌ Primary API PUT failed:', error.message);
+      
       if (PRIMARY_API_URL !== FALLBACK_API_URL) {
-        return await fallbackApi.put(url, data, config);
+        try {
+          console.log(`🔄 Trying fallback API PUT: ${FALLBACK_API_URL}${url}`);
+          const response = await fallbackApi.put(url, data, config);
+          console.log('✅ Fallback API PUT success');
+          return response;
+        } catch (fallbackError) {
+          console.error('❌ Fallback API PUT also failed:', fallbackError.message);
+        }
       }
+      
+      // For auth endpoints, don't return mock data - throw the error
+      if (url.includes('/auth/') || url.includes('/user/')) {
+        console.error('🚫 Auth/User PUT endpoint failed, throwing error');
+        throw error;
+      }
+      
       throw error;
     }
   },
 
   async delete(url, config = {}) {
     try {
-      return await api.delete(url, config);
+      console.log(`🔍 Trying primary API DELETE: ${PRIMARY_API_URL}${url}`);
+      const response = await api.delete(url, config);
+      console.log('✅ Primary API DELETE success');
+      return response;
     } catch (error) {
+      console.warn('❌ Primary API DELETE failed:', error.message);
+      
       if (PRIMARY_API_URL !== FALLBACK_API_URL) {
-        return await fallbackApi.delete(url, config);
+        try {
+          console.log(`🔄 Trying fallback API DELETE: ${FALLBACK_API_URL}${url}`);
+          const response = await fallbackApi.delete(url, config);
+          console.log('✅ Fallback API DELETE success');
+          return response;
+        } catch (fallbackError) {
+          console.error('❌ Fallback API DELETE also failed:', fallbackError.message);
+        }
       }
+      
+      // For auth endpoints, don't return mock data - throw the error
+      if (url.includes('/auth/') || url.includes('/user/')) {
+        console.error('🚫 Auth/User DELETE endpoint failed, throwing error');
+        throw error;
+      }
+      
       throw error;
     }
   }

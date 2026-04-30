@@ -6,6 +6,7 @@ import BreakingNewsTicker from '../components/BreakingNewsTicker';
 import ArticleCard from '../components/article/ArticleCard';
 import ArticleGrid from '../components/article/ArticleGrid';
 import Sidebar from '../components/layout/Sidebar';
+import AuthStatus from '../components/AuthStatus';
 import api from '../utils/api';
 import '../styles/Home.css';
 
@@ -247,6 +248,9 @@ export default function Home() {
         <meta property="og:type" content="website" />
         <link rel="alternate" type="application/rss+xml" title="WorldToday RSS" href="/api/rss/breaking" />
       </Helmet>
+
+      {/* Temporary Auth Status Component */}
+      <AuthStatus />
 
       {/* Breaking News Ticker */}
       <BreakingNewsTicker />
