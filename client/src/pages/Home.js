@@ -27,6 +27,7 @@ export default function Home() {
   const [feedMode, setFeedMode] = useState('top');
   const [loading, setLoading] = useState(true);
   const [categoryLoading, setCategoryLoading] = useState(true);
+  const [debugMode, setDebugMode] = useState(false); // Debug mode to show category info
   const [selectedCountry, setSelectedCountry] = useState(
     localStorage.getItem('worldtoday_country') || ''
   );
@@ -59,7 +60,7 @@ export default function Home() {
         try {
           const params = { 
             category, 
-            limit: 10,  // Increased limit to get more options
+            limit: 10,  // Get more options to choose from
             ...(selectedCountry && { country: selectedCountry })
           };
           
@@ -85,27 +86,38 @@ export default function Home() {
 
       const results = await Promise.all(promises);
       
-      // Get the best article from each category (prefer with images)
-      const topArticles = results.map(({ category, articles }) => {
-        if (articles.length === 0) return null;
-        
-        // Prefer articles with images
-        const withImage = articles.find(a => a.urlToImage && a.urlToImage.trim() !== '');
-        return withImage || articles[0];
-      }).filter(Boolean);
+      // IMPORTANT: Get exactly ONE article from each category for the top 5
+      const topFiveArticles = [];
+      
+      results.forEach(({ category, articles }) => {
+        if (articles.length > 0) {
+          // Prefer articles with images
+          const withImage = articles.find(a => a.urlToImage && a.urlToImage.trim() !== '');
+          const selectedArticle = withImage || articles[0];
+          
+          // Add category info for debugging
+          selectedArticle._categorySource = category;
+          topFiveArticles.push(selectedArticle);
+          
+          console.log(`🎯 Selected for top row - ${category}: "${selectedArticle.title}"`);
+        } else {
+          console.warn(`⚠️ No articles available for ${category}`);
+        }
+      });
 
-      console.log(`🎯 Selected ${topArticles.length} top articles`);
-
-      // Get remaining articles for the rest of the feed
-      const usedUrls = new Set(topArticles.map(a => a.url));
+      console.log(`🎯 Top 5 articles from different categories: ${topFiveArticles.length}`);
+      
+      // Get remaining articles for the rest of the feed (excluding the top 5)
+      const usedUrls = new Set(topFiveArticles.map(a => a.url));
       const remainingArticles = results
         .flatMap(({ articles }) => articles)
         .filter(a => !usedUrls.has(a.url))
         .filter((a, i, self) => self.findIndex(x => x.url === a.url) === i)
         .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
 
-      const finalArticles = [...topArticles, ...remainingArticles].slice(0, 30);
-      console.log(`📋 Final featured articles: ${finalArticles.length}`);
+      // Combine: Top 5 (different categories) + remaining articles
+      const finalArticles = [...topFiveArticles, ...remainingArticles].slice(0, 30);
+      console.log(`📋 Final featured articles: ${finalArticles.length} (Top 5 from different categories + ${remainingArticles.length} others)`);
       
       setFeatured(finalArticles);
     } catch (err) {
@@ -206,6 +218,18 @@ export default function Home() {
                 </button>
               </div>
             )}
+            
+            {/* Debug Toggle */}
+            <div className="home__debug-toggle">
+              <button
+                className={`debug-toggle-btn${debugMode ? ' active' : ''}`}
+                onClick={() => setDebugMode(!debugMode)}
+                title="Toggle category debug info"
+              >
+                🔍 Debug
+              </button>
+            </div>
+            
             {selectedCountry && (
               <div className="home__country-banner">
                 <span>
@@ -236,6 +260,18 @@ export default function Home() {
                   {/* Hero Magazine Grid */}
                   {displayArticles.length > 0 && (
                     <section className="home__section home__section--hero" aria-label="Featured stories">
+                      {debugMode && (
+                        <div className="debug-info">
+                          <h4>🔍 Top 5 Articles Debug Info:</h4>
+                          <div className="debug-categories">
+                            {displayArticles.slice(0, 5).map((article, index) => (
+                              <div key={article._id} className="debug-category-item">
+                                <strong>#{index + 1}:</strong> {article._categorySource || article.category || 'Unknown'} - "{article.title?.substring(0, 50)}..."
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                       <ArticleGrid articles={displayArticles} layout="magazine" />
                     </section>
                   )}

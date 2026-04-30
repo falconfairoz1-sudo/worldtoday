@@ -115,7 +115,7 @@ function getMockData(url) {
       },
       {
         _id: 'pol2',
-        title: 'New Policy Reforms Announced',
+        title: 'New Policy Reforms Announced by Government',
         description: 'Government announces major policy changes affecting citizens nationwide.',
         content: 'The government has announced significant policy reforms...',
         category: 'politics',
@@ -129,7 +129,7 @@ function getMockData(url) {
     business: [
       {
         _id: 'bus1',
-        title: 'Global Markets Show Strong Growth',
+        title: 'Global Markets Show Strong Growth This Quarter',
         description: 'International markets demonstrate positive trends as economic indicators improve.',
         content: 'Business analysts report encouraging signs across multiple sectors...',
         category: 'business',
@@ -141,7 +141,7 @@ function getMockData(url) {
       },
       {
         _id: 'bus2',
-        title: 'Tech Stocks Reach New Heights',
+        title: 'Tech Stocks Reach New Heights in Trading',
         description: 'Technology companies see unprecedented growth in market valuation.',
         content: 'The technology sector continues to lead market growth...',
         category: 'business',
@@ -155,7 +155,7 @@ function getMockData(url) {
     technology: [
       {
         _id: 'tech1',
-        title: 'AI Revolution Transforms Industries',
+        title: 'AI Revolution Transforms Industries Worldwide',
         description: 'Latest developments in artificial intelligence are reshaping industries worldwide.',
         content: 'The technology sector continues to evolve rapidly with new innovations...',
         category: 'technology',
@@ -167,7 +167,7 @@ function getMockData(url) {
       },
       {
         _id: 'tech2',
-        title: 'Breakthrough in Quantum Computing',
+        title: 'Breakthrough in Quantum Computing Research',
         description: 'Scientists achieve major milestone in quantum computing development.',
         content: 'Researchers have made significant progress in quantum computing...',
         category: 'technology',
@@ -193,7 +193,7 @@ function getMockData(url) {
       },
       {
         _id: 'sport2',
-        title: 'Olympic Preparations Underway',
+        title: 'Olympic Preparations Underway for Athletes',
         description: 'Athletes prepare for upcoming international competitions.',
         content: 'Olympic preparations are in full swing as athletes...',
         category: 'sports',
@@ -207,7 +207,7 @@ function getMockData(url) {
     entertainment: [
       {
         _id: 'ent1',
-        title: 'Hollywood Blockbuster Breaks Records',
+        title: 'Hollywood Blockbuster Breaks Box Office Records',
         description: 'Latest movie releases dominate box office worldwide.',
         content: 'The entertainment industry sees record-breaking performances...',
         category: 'entertainment',
@@ -216,12 +216,24 @@ function getMockData(url) {
         source: { name: 'Entertainment Weekly', url: 'https://example.com' },
         publishedAt: new Date().toISOString(),
         url: 'https://example.com/entertainment-1'
+      },
+      {
+        _id: 'ent2',
+        title: 'Music Festival Season Kicks Off Worldwide',
+        description: 'Major music festivals announce lineups and ticket sales begin.',
+        content: 'Music fans prepare for the biggest festival season...',
+        category: 'entertainment',
+        country: 'us',
+        urlToImage: 'https://picsum.photos/800/600?random=51',
+        source: { name: 'Music Today', url: 'https://example.com' },
+        publishedAt: new Date().toISOString(),
+        url: 'https://example.com/entertainment-2'
       }
     ],
     health: [
       {
         _id: 'health1',
-        title: 'Medical Breakthrough in Treatment',
+        title: 'Medical Breakthrough in Cancer Treatment',
         description: 'Scientists discover new treatment methods for common diseases.',
         content: 'Medical researchers have made significant breakthroughs...',
         category: 'health',
